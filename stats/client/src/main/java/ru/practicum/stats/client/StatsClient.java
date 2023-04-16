@@ -1,48 +1,57 @@
 package ru.practicum.stats.client;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.reactive.function.client.WebClient;
 import ru.practicum.stats.dto.EndpointHitDto;
+import ru.practicum.stats.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 
 @Component
-public class StatsClient extends BaseClient {
+public class StatsClient {
+    private final WebClient webClient;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Autowired
-    public StatsClient(@Value("${stats-server.url}") String url, RestTemplateBuilder builder) {
-        super(builder
-                .uriTemplateHandler(new DefaultUriBuilderFactory(url))
-                .requestFactory(HttpComponentsClientHttpRequestFactory::new).build());
+    public StatsClient(@Value("${stats-service.url}") String url) {
+        this.webClient = WebClient.create(url);
     }
 
-    public ResponseEntity<Object> saveRequest(String app, String uri, String ip, LocalDateTime date) {
+    public void saveRequest(String app, String path, String ip, LocalDateTime time) {
         EndpointHitDto dto = EndpointHitDto.builder()
                 .app(app)
-                .uri(uri)
+                .uri(path)
                 .ip(ip)
-                .timestamp(date)
+                .timestamp(time.format(formatter))
                 .build();
-
-        return post("/hit", dto);
+        webClient
+                .post()
+                .uri("/hit")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .bodyValue(dto)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 
-    public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uri, Boolean unique) {
-        Map<String, Object> pararmeters = Map.of(
-                "Start", start,
-                "end", end,
-                "uris", uri,
-                "unique", unique
-        );
-        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", pararmeters);
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uri, Boolean unique) {
+        return webClient
+                .get()
+                .uri(uriBuilder ->
+                        uriBuilder.path("/stats")
+                                .queryParam("start", start.format(formatter))
+                                .queryParam("end", end.format(formatter))
+                                .queryParam("uris", uri)
+                                .queryParam("unique", unique)
+                                .build())
+                .retrieve()
+                .bodyToFlux(ViewStatsDto.class)
+                .collectList()
+                .block();
     }
-
 }
