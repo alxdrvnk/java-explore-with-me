@@ -22,13 +22,14 @@ public class StatsController {
 
     @PostMapping("/hit")
     public void create(@RequestBody EndpointHitDto dto) {
+        log.info("Add EndpointHit with data: " + dto);
         statsService.create(statsMapper.toEndpointHit(dto));
     }
 
     @GetMapping("/stats")
     public List<ViewStatsDto> getStats(@RequestParam String start,
                                        @RequestParam String end,
-                                       @RequestParam List<String> uris,
+                                       @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") Boolean unique) {
 
         return statsMapper.toListViewStatsDto(

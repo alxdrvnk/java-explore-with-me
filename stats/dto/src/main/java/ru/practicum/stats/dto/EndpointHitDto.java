@@ -15,7 +15,6 @@ public class EndpointHitDto {
      Long id;
      @NotBlank
      String app;
-
      String uri;
      @NotBlank
      String ip;
