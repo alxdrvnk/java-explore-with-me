@@ -3,5 +3,8 @@ CREATE TABLE IF NOT EXISTS endpoint_hit (
     app VARCHAR NOT NULL,
     uri VARCHAR NOT NULL,
     ip VARCHAR NOT NULL,
-    timestamp TIMESTAMP NOT NULL
+    timestamp TIMESTAMP WITH TIME ZONE NOT NULL
 );
+
+CREATE INDEX uri_idx ON endpoint_hit (uri);
+CREATE INDEX timestamp ON endpoint_hit (timestamp);
