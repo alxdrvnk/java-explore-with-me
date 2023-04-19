@@ -1,0 +1,40 @@
+<dataset>
+     <PUBLIC.ENDPOINT_HIT
+             id="1"
+             app="test app"
+             uri="testuri"
+             ip="192.168.100.100"
+             timestamp="2007-09-02 12:00:00.000"
+     />
+     <PUBLIC.ENDPOINT_HIT
+             id="2"
+             app="test app"
+             uri="testuri"
+             ip="192.168.100.101"
+             timestamp="2007-09-08 12:00:00.000"
+     />
+
+     <PUBLIC.ENDPOINT_HIT
+             id="3"
+             app="test app"
+             uri="testuri"
+             ip="192.168.100.101"
+             timestamp="2007-09-10 12:00:00.000"
+     />
+
+     <PUBLIC.ENDPOINT_HIT
+             id="4"
+             app="test another app"
+             uri="anotheruri"
+             ip="192.168.100.101"
+             timestamp="2007-09-05 12:00:00.000"
+     />
+
+     <PUBLIC.ENDPOINT_HIT
+             id="5"
+             app="test another app"
+             uri="anotheruri"
+             ip="192.168.100.101"
+             timestamp="2007-09-10 12:00:00.000"
+     />
+</dataset>
