@@ -3,6 +3,8 @@ package ru.practicum.main.controller.adminapi;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.main.dto.category.CategoryDto;
+import ru.practicum.main.dto.category.NewCategoryDto;
 import ru.practicum.main.dto.user.NewUserRequest;
 import ru.practicum.main.dto.user.UserDto;
 
@@ -21,4 +23,14 @@ public interface AdminApi {
 
     @DeleteMapping("/users/{id}")
     void deleteUser(@PathVariable("id") Long id);
+
+    @PostMapping("/categories")
+    ResponseEntity<CategoryDto> createCategory(@RequestBody NewCategoryDto newCategoryDto);
+
+    @DeleteMapping("/categories/{id}")
+    void deleteCategorie(@PathVariable("id") Long id);
+
+    @PatchMapping("/categories/{id}")
+    CategoryDto updateCategory(@PathVariable("id") Long id,
+                               @RequestBody CategoryDto categoryDto);
 }

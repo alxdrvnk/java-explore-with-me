@@ -7,7 +7,7 @@ import ru.practicum.main.repository.UserRepository
 import spock.lang.Specification
 
 
-class AdminServiceImplSpec extends Specification {
+class AdminUserServiceImplSpec extends Specification {
     def "Should throw EwemAlreadyExistsException when create User with existing email"() {
         given:
         User user = User.builder()
@@ -19,7 +19,7 @@ class AdminServiceImplSpec extends Specification {
             findByEmail("test@mail.mail") >> { Optional.of(User.builder().build()) }
         }
 
-        def service = new AdminServiceImpl(repository)
+        def service = new AdminUserServiceImpl(repository)
 
         when:
         service.createUser(user)
@@ -34,7 +34,7 @@ class AdminServiceImplSpec extends Specification {
             findById(1L) >> { Optional.empty() }
         }
 
-        def service = new AdminServiceImpl(repository)
+        def service = new AdminUserServiceImpl(repository)
 
         when:
         service.getUserById(1L)
