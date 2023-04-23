@@ -1,0 +1,17 @@
+<dataset>
+    <PUBLIC.USERS
+            id="1"
+            email="firstTest@mail.mail"
+            name="firstTestName"
+    />
+    <PUBLIC.USERS
+            id="2"
+            email="secondTest@mail.mail"
+            name="secondTestName"
+    />
+    <PUBLIC.USERS
+            id="3"
+            email="thirdTest@mail.mail"
+            name="thirdTestName"
+    />
+</dataset>
