@@ -8,7 +8,7 @@ import spock.lang.Specification
 
 
 class AdminUserServiceImplSpec extends Specification {
-    def "Should throw EwemAlreadyExistsException when create User with existing email"() {
+    def "Should throw EwmAlreadyExistsException when create User with existing email"() {
         given:
         User user = User.builder()
                 .email("test@mail.mail")

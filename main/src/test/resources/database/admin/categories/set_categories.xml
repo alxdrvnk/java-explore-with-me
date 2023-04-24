@@ -1,0 +1,11 @@
+<dataset>
+    <PUBLIC.CATEGORIES
+            id="1"
+            name="TestName"
+    />
+
+    <PUBLIC.CATEGORIES
+            id="2"
+            name="AnotherTestName"
+    />
+</dataset>

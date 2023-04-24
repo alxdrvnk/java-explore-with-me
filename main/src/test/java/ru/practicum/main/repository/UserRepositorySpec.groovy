@@ -36,7 +36,7 @@ class UserRepositorySpec extends Specification {
         dbUser.getId() == 1
     }
 
-    @DatabaseSetup(value = "classpath:database/set_users.xml", connection = "dbUnitDatabaseConnection")
+    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml", connection = "dbUnitDatabaseConnection")
     def "Should return list of Users if search by ids" () {
         when:
         def listUsers = repository.findAllById(List.of(1L,2L))
@@ -50,7 +50,7 @@ class UserRepositorySpec extends Specification {
     }
 
 
-    @DatabaseSetup(value = "classpath:database/set_users.xml", connection = "dbUnitDatabaseConnection")
+    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml", connection = "dbUnitDatabaseConnection")
     def "Should return list of Users if search without ids" () {
         when:
         def listUsers = repository.findAll()
@@ -64,7 +64,7 @@ class UserRepositorySpec extends Specification {
     }
 
 
-    @DatabaseSetup(value = "classpath:database/set_users.xml", connection = "dbUnitDatabaseConnection")
+    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml", connection = "dbUnitDatabaseConnection")
     def "Should return list of Users if search with pageable params" () {
         when:
         def listUsers = repository.findAll(PageRequest.of(0,1)).getContent()

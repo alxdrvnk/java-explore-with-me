@@ -8,8 +8,10 @@ import ru.practicum.main.dto.category.CategoryDto;
 import ru.practicum.main.dto.category.NewCategoryDto;
 import ru.practicum.main.dto.user.NewUserRequest;
 import ru.practicum.main.dto.user.UserDto;
+import ru.practicum.main.mapper.CategoryMapper;
 import ru.practicum.main.mapper.UserMapper;
 import ru.practicum.main.model.User;
+import ru.practicum.main.service.admin.AdminCategoryService;
 import ru.practicum.main.service.admin.AdminUserService;
 
 import java.util.List;
@@ -19,7 +21,9 @@ import java.util.List;
 public class AdminController implements AdminApi{
 
     private final AdminUserService adminUserService;
+    private final AdminCategoryService adminCategoryService;
     private final UserMapper userMapper;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public ResponseEntity<UserDto> createUser(NewUserRequest newUserRequest) {

@@ -14,5 +14,5 @@ public interface AdminCategoryService {
 
     Category getById(Long id);
 
-    List<Category> getAllCategories();
+    List<Category> getAllCategories(Integer from, Integer size);
 }
