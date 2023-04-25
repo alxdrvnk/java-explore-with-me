@@ -1,10 +1,10 @@
-package ru.practicum.main.service.admin;
+package ru.practicum.main.service.category;
 
-import ru.practicum.main.model.Category;
+import ru.practicum.main.model.category.Category;
 
 import java.util.List;
 
-public interface AdminCategoryService {
+public interface CategoryService {
 
     Category createCategory(Category category);
 

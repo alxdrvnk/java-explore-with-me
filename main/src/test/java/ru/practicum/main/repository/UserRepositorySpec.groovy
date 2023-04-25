@@ -10,7 +10,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import ru.practicum.main.configuration.DbUnitConfig
-import ru.practicum.main.model.User
+import ru.practicum.main.model.user.User
 import spock.lang.Specification
 
 @DataJpaTest

@@ -2,12 +2,13 @@ package ru.practicum.main.service.admin
 
 import ru.practicum.main.exception.EwmAlreadyExistsException
 import ru.practicum.main.exception.EwmNotFoundException
-import ru.practicum.main.model.User
+import ru.practicum.main.model.user.User
 import ru.practicum.main.repository.UserRepository
+import ru.practicum.main.service.user.UserServiceImpl
 import spock.lang.Specification
 
 
-class AdminUserServiceImplSpec extends Specification {
+class UserServiceImplSpec extends Specification {
     def "Should throw EwmAlreadyExistsException when create User with existing email"() {
         given:
         User user = User.builder()
@@ -19,7 +20,7 @@ class AdminUserServiceImplSpec extends Specification {
             findByEmail("test@mail.mail") >> { Optional.of(User.builder().build()) }
         }
 
-        def service = new AdminUserServiceImpl(repository)
+        def service = new UserServiceImpl(repository)
 
         when:
         service.createUser(user)
@@ -34,7 +35,7 @@ class AdminUserServiceImplSpec extends Specification {
             findById(1L) >> { Optional.empty() }
         }
 
-        def service = new AdminUserServiceImpl(repository)
+        def service = new UserServiceImpl(repository)
 
         when:
         service.getUserById(1L)

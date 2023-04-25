@@ -2,7 +2,7 @@ package ru.practicum.main.service.admin
 
 import spock.lang.Specification
 
-class AdminCategoryServiceImplSpec extends Specification {
+class CategoryServiceImplSpec extends Specification {
     def "Should throw EwmAlreadyExistsException when create Category with existing name"() {
 
     }

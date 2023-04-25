@@ -1,4 +1,4 @@
-package ru.practicum.main.service.admin;
+package ru.practicum.main.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.exception.EwmAlreadyExistsException;
 import ru.practicum.main.exception.EwmInternalServerException;
 import ru.practicum.main.exception.EwmNotFoundException;
-import ru.practicum.main.model.Category;
-import ru.practicum.main.model.User;
-import ru.practicum.main.repository.CategoryRepository;
+import ru.practicum.main.model.user.User;
 import ru.practicum.main.repository.UserRepository;
 
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.Optional;
 @Slf4j(topic = "Admin User Service")
 @Service
 @RequiredArgsConstructor
-public class AdminUserServiceImpl implements AdminUserService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 

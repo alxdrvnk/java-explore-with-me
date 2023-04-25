@@ -1,10 +1,10 @@
-package ru.practicum.main.service.admin;
+package ru.practicum.main.service.user;
 
-import ru.practicum.main.model.User;
+import ru.practicum.main.model.user.User;
 
 import java.util.List;
 
-public interface AdminUserService {
+public interface UserService {
      User createUser(User user);
 
      User getUserById(Long id);

@@ -1,10 +1,10 @@
-package ru.practicum.main.mapper;
+package ru.practicum.main.mapper.user;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.main.dto.user.NewUserRequest;
 import ru.practicum.main.dto.user.UserDto;
 import ru.practicum.main.dto.user.UserShortDto;
-import ru.practicum.main.model.User;
+import ru.practicum.main.model.user.User;
 
 import java.util.List;
 import java.util.stream.Collectors;

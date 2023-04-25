@@ -8,11 +8,11 @@ import ru.practicum.main.dto.category.CategoryDto;
 import ru.practicum.main.dto.category.NewCategoryDto;
 import ru.practicum.main.dto.user.NewUserRequest;
 import ru.practicum.main.dto.user.UserDto;
-import ru.practicum.main.mapper.CategoryMapper;
-import ru.practicum.main.mapper.UserMapper;
-import ru.practicum.main.model.User;
-import ru.practicum.main.service.admin.AdminCategoryService;
-import ru.practicum.main.service.admin.AdminUserService;
+import ru.practicum.main.mapper.category.CategoryMapper;
+import ru.practicum.main.mapper.user.UserMapper;
+import ru.practicum.main.model.user.User;
+import ru.practicum.main.service.category.CategoryService;
+import ru.practicum.main.service.user.UserService;
 
 import java.util.List;
 
@@ -20,14 +20,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController implements AdminApi{
 
-    private final AdminUserService adminUserService;
-    private final AdminCategoryService adminCategoryService;
+    private final UserService userService;
+    private final CategoryService categoryService;
     private final UserMapper userMapper;
     private final CategoryMapper categoryMapper;
 
     @Override
     public ResponseEntity<UserDto> createUser(NewUserRequest newUserRequest) {
-        User user = adminUserService.createUser(userMapper.toUser(newUserRequest));
+        User user = userService.createUser(userMapper.toUser(newUserRequest));
         return new ResponseEntity<>(
                 userMapper.toUserDto(user), HttpStatus.CREATED);
 
@@ -35,26 +35,11 @@ public class AdminController implements AdminApi{
 
     @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
-        return userMapper.toUserDtoList(adminUserService.getUsers(ids, from, size));
+        return userMapper.toUserDtoList(userService.getUsers(ids, from, size));
     }
 
     @Override
     public void deleteUser(Long id) {
-        adminUserService.deleteUserById(id);
-    }
-
-    @Override
-    public ResponseEntity<CategoryDto> createCategory(NewCategoryDto newCategoryDto) {
-        return null;
-    }
-
-    @Override
-    public void deleteCategorie(Long id) {
-
-    }
-
-    @Override
-    public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
-        return null;
+        userService.deleteUserById(id);
     }
 }

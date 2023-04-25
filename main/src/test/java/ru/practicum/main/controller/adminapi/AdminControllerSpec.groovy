@@ -6,9 +6,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import ru.practicum.main.dto.user.NewUserRequest
 import ru.practicum.main.exception.EwmAlreadyExistsException
 import ru.practicum.main.handler.MainServiceHandler
-import ru.practicum.main.mapper.UserMapper
-import ru.practicum.main.model.User
-import ru.practicum.main.service.admin.AdminUserService
+import ru.practicum.main.mapper.user.UserMapper
+import ru.practicum.main.model.user.User
+import ru.practicum.main.service.user.UserService
 import spock.lang.Specification
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -20,7 +20,7 @@ class AdminControllerSpec extends Specification {
 
    def "Should return 409 when create user with existed email"() {
       given:
-      def service = Mock(AdminUserService)
+      def service = Mock(UserService)
       def controller = new AdminController(service, userMapper)
       def server = MockMvcBuilders
               .standaloneSetup(controller)
@@ -49,7 +49,7 @@ class AdminControllerSpec extends Specification {
 
    def "Should return 201 when new user created"() {
       given:
-      def service = Mock(AdminUserService)
+      def service = Mock(UserService)
       def controller = new AdminController(service, userMapper)
       def server = MockMvcBuilders
               .standaloneSetup(controller)
