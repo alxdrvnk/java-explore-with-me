@@ -14,5 +14,5 @@ public interface EventRepositoy extends JpaRepository<Event, Long> {
 
     Optional<Event> findByIdAndStateIs(Long id, EventState state);
 
-    Optional<Event> findByIdAndInitiato(Long id, User user);
+    Optional<Event> findByIdAndInitiator(Long id, User user);
 }

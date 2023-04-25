@@ -42,12 +42,11 @@ public class Event {
     int participantLimit;
     @Column(name = "published_date")
     LocalDateTime publishedDate;
-    @Column(name = "rerquest_moderation")
+    @Column(name = "request_moderation")
     Boolean moderation;
     @Enumerated(EnumType.STRING)
     EventState state;
     String title;
     @Transient
     int views;
-
 }

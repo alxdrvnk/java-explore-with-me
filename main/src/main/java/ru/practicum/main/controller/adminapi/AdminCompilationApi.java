@@ -7,7 +7,7 @@ import ru.practicum.main.dto.compilation.UpdateCompilationRequestDto;
 
 import javax.validation.Valid;
 
-public interface AdminCompilationApi {
+public interface AdminCompilationApi extends AdminApi {
     @PostMapping("/compilations")
     ResponseEntity<Object> createCompilation(@RequestBody @Valid NewCompilationDto compilationDto);
 
