@@ -7,6 +7,7 @@ import ru.practicum.main.dto.compilation.UpdateCompilationRequestDto;
 import ru.practicum.main.model.compilation.Compilation;
 import ru.practicum.main.model.event.Event;
 
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,5 +35,9 @@ public class CompilationMapper {
                 .pinned(updateRequest.getPinned())
                 .title(updateRequest.getTitle())
                 .build();
+    }
+
+    public Collection<CompilationDto> toCompilationDtoList(Collection<Compilation> allCompilation) {
+        return allCompilation.stream().map(this::toCompilationDto).collect(Collectors.toList());
     }
 }

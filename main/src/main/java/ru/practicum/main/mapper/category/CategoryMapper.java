@@ -5,6 +5,7 @@ import ru.practicum.main.dto.category.CategoryDto;
 import ru.practicum.main.dto.category.NewCategoryDto;
 import ru.practicum.main.model.category.Category;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class CategoryMapper {
                 .build();
     }
 
-    public List<CategoryDto> toCategoryDtoList(List<Category> categoryList) {
+    public List<CategoryDto> toCategoryDtoList(Collection<Category> categoryList) {
         return categoryList.stream().map(this::toCategoryDto).collect(Collectors.toList());
     }
 }

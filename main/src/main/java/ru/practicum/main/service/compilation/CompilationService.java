@@ -15,5 +15,4 @@ public interface CompilationService {
     Collection<Compilation> getAllCompilation(Boolean pinned, Integer from, Integer size);
 
     Compilation getCompilationBy(Long id);
-
 }
