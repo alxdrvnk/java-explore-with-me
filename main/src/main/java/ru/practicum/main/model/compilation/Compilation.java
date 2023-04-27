@@ -2,8 +2,10 @@ package ru.practicum.main.model.compilation;
 
 
 import lombok.*;
+import ru.practicum.main.model.event.Event;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -18,4 +20,5 @@ public class Compilation {
     Long id;
     Boolean pinned;
     String title;
+    Set<Event> events;
 }

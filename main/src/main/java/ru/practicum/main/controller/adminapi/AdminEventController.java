@@ -22,14 +22,13 @@ public class AdminEventController implements AdminEventApi {
     private final EventMapper eventMapper;
     @Override
     public ResponseEntity<Collection<EventFullDto>> getAllEvents(EventSearchFilter eventSearchFilter) {
-        log.info("Admin get request for all events with filters: {}", eventSearchFilter);
         Collection<Event> events = eventService.getAllEvents(eventSearchFilter);
         return ResponseEntity.ok(eventMapper.toEventFullDtoList(events));
     }
 
     @Override
     public ResponseEntity<EventFullDto> updateEvent(Long id, UpdateEvenAdminRequest updateRequest) {
-        log.info("Admin update event with data: {}", updateRequest);
+        log.info("Admin update Event with data: {}", updateRequest);
         return ResponseEntity.ok(eventMapper.toEventFullDto(eventService.updateEventByAdmin(id, updateRequest)));
     }
 }
