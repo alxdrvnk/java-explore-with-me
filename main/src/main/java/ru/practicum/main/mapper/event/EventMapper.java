@@ -8,8 +8,11 @@ import ru.practicum.main.mapper.category.CategoryMapper;
 import ru.practicum.main.mapper.user.UserMapper;
 import ru.practicum.main.model.category.Category;
 import ru.practicum.main.model.event.Event;
+import ru.practicum.main.model.event.EventRequestStatusUpdateRequest;
 import ru.practicum.main.model.event.EventState;
 import ru.practicum.main.model.event.Location;
+import ru.practicum.main.model.request.ParticipationRequest;
+import ru.practicum.main.model.request.RequestStatus;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -120,5 +123,12 @@ public class EventMapper {
             default:
                 return null;
         }
+    }
+
+    public EventRequestStatusUpdateRequest toEventRequestStatusUpdateRequests(EventRequestStatusUpdateRequestDto requestDto) {
+        return EventRequestStatusUpdateRequest.builder()
+                .requestIds(requestDto.getRequestIds())
+                .status(RequestStatus.valueOf(requestDto.getStatus()))
+                .build();
     }
 }

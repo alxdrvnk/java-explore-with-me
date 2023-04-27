@@ -35,7 +35,7 @@ public interface PrivateEventApi extends PrivateApi {
                                                                     @PathVariable("eventId") Long eventId);
 
     @PatchMapping("/events/{eventId}/requests")
-    ResponseEntity<EventRequestStatusUpdateResultDto> updateRequests(@PathVariable("userId") Long userId,
-                                                                     @PathVariable("eventId") Long eventId,
-                                                                     @RequestBody EventRequestStatusUpdateRequestDto requestDto);
+    ResponseEntity<EventRequestStatusUpdateResult> updateRequests(@PathVariable("userId") Long userId,
+                                                                  @PathVariable("eventId") Long eventId,
+                                                                  @RequestBody EventRequestStatusUpdateRequestDto requestDto);
 }

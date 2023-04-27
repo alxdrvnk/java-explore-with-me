@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.main.dto.event.*;
 import ru.practicum.main.dto.request.ParticipationRequestDto;
 import ru.practicum.main.mapper.event.EventMapper;
+import ru.practicum.main.mapper.request.RequestMapper;
 import ru.practicum.main.model.event.Event;
+import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.service.event.EventService;
 
-import javax.naming.spi.ResolveResult;
 import java.util.Collection;
 
 @Slf4j(topic = "Private Event Controller")
@@ -20,6 +21,7 @@ public class PrivateEventController implements PrivateEventApi {
 
     private final EventService eventService;
     private final EventMapper eventMapper;
+    private final RequestMapper requestMapper;
 
     @Override
     public ResponseEntity<EventFullDto> createEvent(Long userId, NewEventDto dto) {
@@ -49,11 +51,20 @@ public class PrivateEventController implements PrivateEventApi {
 
     @Override
     public ResponseEntity<Collection<ParticipationRequestDto>> getRequests(Long userId, Long eventId) {
-        return null;
+        Collection<ParticipationRequest> requests = eventService.getEventRequests(userId, eventId);
+        return ResponseEntity.ok(requestMapper.toParticipationRequestDtoList(requests));
     }
 
     @Override
-    public ResponseEntity<EventRequestStatusUpdateResultDto> updateRequests(Long userId, Long eventId, EventRequestStatusUpdateRequestDto requestDto) {
-        return null;
+    public ResponseEntity<EventRequestStatusUpdateResult> updateRequests(Long userId,
+                                                                         Long eventId,
+                                                                         EventRequestStatusUpdateRequestDto requestDto) {
+        log.info("User with id: {} update request for Event with id {} with data: {}", userId, eventId, requestDto);
+        EventRequestStatusUpdateResult result =
+                eventService.updateEventRequests(
+                        userId,
+                        eventId,
+                        eventMapper.toEventRequestStatusUpdateRequests(requestDto));
+        return ResponseEntity.ok(result);
     }
 }
