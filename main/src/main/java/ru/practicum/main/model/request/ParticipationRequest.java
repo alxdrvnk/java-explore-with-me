@@ -1,9 +1,6 @@
 package ru.practicum.main.model.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.main.model.event.Event;
 import ru.practicum.main.model.user.User;
 
@@ -28,6 +25,7 @@ public class ParticipationRequest {
     User requester;
     @Column(name = "created_date")
     LocalDateTime createdDate;
+    @With
     @Enumerated(EnumType.STRING)
     RequestStatus status;
 }

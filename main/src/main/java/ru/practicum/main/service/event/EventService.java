@@ -29,4 +29,10 @@ public interface EventService {
     EventRequestStatusUpdateResult updateEventRequests(Long userId, Long eventId, EventRequestStatusUpdateRequest request);
 
     Collection<Event> getAllEvents(EventSearchFilter filter, String uri, String api);
+
+    Event getEventById(Long eventId);
+
+    void decreaseConfirmRequests(Event event);
+
+    void increaseConfirmedRequests(Event event);
 }

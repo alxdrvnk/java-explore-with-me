@@ -40,4 +40,22 @@ public class CompilationMapper {
     public Collection<CompilationDto> toCompilationDtoList(Collection<Compilation> allCompilation) {
         return allCompilation.stream().map(this::toCompilationDto).collect(Collectors.toList());
     }
+
+    public Compilation partialUpdateCompilation(Compilation compilation, Compilation update) {
+        Compilation updatedCompilation = compilation;
+
+        if (update.getEvents() != null && !update.getEvents().isEmpty()) {
+            updatedCompilation = updatedCompilation.withEvents(update.getEvents());
+        }
+
+        if (update.getPinned() != null) {
+            updatedCompilation =  updatedCompilation.withPinned(update.getPinned());
+        }
+
+        if (update.getTitle() != null) {
+            updatedCompilation = updatedCompilation.withTitle(update.getTitle());
+        }
+
+        return updatedCompilation;
+    }
 }

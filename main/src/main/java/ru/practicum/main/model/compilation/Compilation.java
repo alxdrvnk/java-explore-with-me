@@ -13,6 +13,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@With
 public class Compilation {
 
     @Id

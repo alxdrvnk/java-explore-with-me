@@ -8,7 +8,7 @@ public interface CompilationService {
 
     Compilation createCompilation(Compilation compilation);
 
-    Compilation updateCompilation(Long id, Compilation compilation);
+    Compilation updateCompilation(Long id, Compilation update);
 
     void deleteCompilation(Long id);
 

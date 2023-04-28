@@ -1,9 +1,6 @@
 package ru.practicum.main.model.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.main.model.category.Category;
 import ru.practicum.main.model.user.User;
 
@@ -25,6 +22,7 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
+    @With
     @Column(name = "confirmed_requests")
     int confirmedRequests;
     @Column(name = "created_date")

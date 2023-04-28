@@ -14,7 +14,7 @@ import ru.practicum.main.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j(topic = "Admin User Service")
+@Slf4j(topic = "User Service")
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
