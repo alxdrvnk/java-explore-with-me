@@ -37,6 +37,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     @Transactional
+    //TODO: Возможно стоит вынести провеку события в отдельный метод
     public ParticipationRequest createRequest(Long userId, Long eventId) {
         log.info("User with id: {} create Request on event with id: {}", userId, eventId);
 

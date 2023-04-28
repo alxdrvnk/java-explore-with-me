@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.main.dto.event.EventRequestStatusUpdateResult;
 import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.dto.event.UpdateEvenAdminRequest;
+import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.model.event.Event;
 import ru.practicum.main.model.event.EventRequestStatusUpdateRequest;
 import ru.practicum.main.model.request.ParticipationRequest;
@@ -67,18 +68,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    //TODO: add stats client
     public Collection<Event> getAllEvents(EventSearchFilter filter, String uri, String api) {
         return null;
     }
 
     @Override
     public Event getEventById(Long eventId) {
-        return null;
+        return eventRepositoy.findById(eventId).orElseThrow(
+                () -> new EwmNotFoundException(String.format("Event wih id: %d not found", eventId)));
     }
 
     @Override
     @Transactional
     public void decreaseConfirmRequests(Event event) {
+        log.info("Decrease count of Confirmed requests for Event with id: {}",event.getId());
         if (event.getConfirmedRequests() > 0) {
             eventRepositoy.save(event.withConfirmedRequests(event.getConfirmedRequests() - 1));
         }
@@ -87,8 +91,10 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void increaseConfirmedRequests(Event event) {
+        log.info("Increase confirmed Requests for Event with id: {}", event.getId());
         if (event.getParticipantLimit() == 0 || event.getParticipantLimit() != event.getConfirmedRequests()) {
             eventRepositoy.save(event.withConfirmedRequests(event.getConfirmedRequests() + 1));
         }
     }
+
 }
