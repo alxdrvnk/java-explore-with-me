@@ -6,10 +6,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import ru.practicum.main.dto.user.NewUserRequest
 import ru.practicum.main.exception.EwmAlreadyExistsException
 import ru.practicum.main.handler.MainServiceHandler
-import ru.practicum.main.mapper.category.CategoryMapper
 import ru.practicum.main.mapper.user.UserMapper
 import ru.practicum.main.model.user.User
-import ru.practicum.main.service.category.CategoryService
 import ru.practicum.main.service.user.UserService
 import spock.lang.Specification
 

@@ -4,16 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.main.converter.DateTimeConverter;
 import ru.practicum.main.dto.event.*;
+import ru.practicum.main.exception.EwmIlligalArgumentException;
 import ru.practicum.main.mapper.category.CategoryMapper;
 import ru.practicum.main.mapper.user.UserMapper;
 import ru.practicum.main.model.category.Category;
-import ru.practicum.main.model.event.Event;
-import ru.practicum.main.model.event.EventRequestStatusUpdateRequest;
-import ru.practicum.main.model.event.EventState;
-import ru.practicum.main.model.event.Location;
-import ru.practicum.main.model.request.ParticipationRequest;
+import ru.practicum.main.model.event.*;
 import ru.practicum.main.model.request.RequestStatus;
+import ru.practicum.main.model.user.User;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -24,6 +24,7 @@ public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
     private final DateTimeConverter dateTimeConverter;
+    private final Clock clock;
 
     public EventFullDto toEventFullDto(Event event) {
         return EventFullDto.builder()
@@ -82,35 +83,49 @@ public class EventMapper {
                 .build();
     }
 
-    public Event toEvent(NewEventDto dto) {
-        return Event.builder()
+    public NewEventRequest toNewEventRequest(NewEventDto dto) {
+        return NewEventRequest.builder()
                 .annotation(dto.getAnnotation())
-                .category(Category.builder().id(dto.getCategory()).build())
+                .categoryId(dto.getCategory())
                 .description(dto.getDescription())
                 .eventDate(dateTimeConverter.parseDate(dto.getEventDate()))
-                .location(this.toLocation(dto.getLocation()))
+                .location(toLocation(dto.getLocation()))
                 .paid(dto.getPaid())
                 .participantLimit(dto.getParticipantLimit())
-                .moderation(dto.getRequestModeration())
+                .requestModeration(dto.getRequestModeration())
                 .title(dto.getTitle())
                 .build();
-
     }
 
-    public Event toEvent(UpdateEventUserRequestDto requestDto) {
-        return Event.builder()
-                .annotation(requestDto.getAnnotation())
-                .category(Category.builder().id(requestDto.getCategoryId()).build())
-                .description(requestDto.getDescription())
-                .eventDate(dateTimeConverter.parseDate(requestDto.getEventDate()))
-                .location(this.toLocation(requestDto.getLocation()))
-                .paid(requestDto.getPaid())
-                .participantLimit(requestDto.getParticipantLimit())
-                .moderation(requestDto.getRequestModeration())
-                .state(toEventState(requestDto.getStateAction()))
-                .title(requestDto.getTitle())
+    public UpdateEventRequest toUpdateEventRequest(UpdateEventUserRequestDto dto) {
+        return UpdateEventRequest.builder()
+                .annotation(dto.getAnnotation())
+                .categoryId(dto.getCategoryId())
+                .description(dto.getDescription())
+                .eventDate(dateTimeConverter.parseDate(dto.getEventDate()))
+                .location(toLocation(dto.getLocation()))
+                .paid(dto.getPaid())
+                .participantLimit(dto.getParticipantLimit())
+                .eventState(toEventState(dto.getStateAction()))
+                .title(dto.getTitle())
                 .build();
     }
+
+    public UpdateEventRequest toUpdateEventRequest(UpdateEventAdminRequestDto updateRequest) {
+        return UpdateEventRequest.builder()
+                .annotation(updateRequest.getAnnotation())
+                .categoryId(updateRequest.getCategoryId())
+                .description(updateRequest.getDescription())
+                .eventDate(dateTimeConverter.parseDate(updateRequest.getEventDate()))
+                .location(toLocation(updateRequest.getLocation()))
+                .paid(updateRequest.getPaid())
+                .participantLimit(updateRequest.getParticipantLimit())
+                .eventState(toEventState(updateRequest.getStateAction()))
+                .title(updateRequest.getTitle())
+                .build();
+    }
+
+
 
     EventState toEventState(StateAction stateAction) {
         switch (stateAction){
@@ -131,4 +146,71 @@ public class EventMapper {
                 .status(RequestStatus.valueOf(requestDto.getStatus()))
                 .build();
     }
+
+    public Event partialEventUpdate(Event event, UpdateEventRequest updateRequest) {
+        Event updatedEvent = event;
+        if (updateRequest.getAnnotation() != null) {
+            updatedEvent = updatedEvent.withAnnotation(updateRequest.getAnnotation());
+        }
+        if (updateRequest.getDescription() != null) {
+            updatedEvent = updatedEvent.withDescription(updateRequest.getDescription());
+        }
+        if (updateRequest.getEventDate() != null) {
+            updatedEvent = updatedEvent.withEventDate(updateRequest.getEventDate());
+        }
+        if (updateRequest.getLocation() != null) {
+            updatedEvent = updatedEvent.withLocation(updateRequest.getLocation());
+        }
+        if (updateRequest.getPaid() != null) {
+            updatedEvent = updatedEvent.withPaid(updateRequest.getPaid());
+        }
+        if (updateRequest.getParticipantLimit() != null) {
+            updatedEvent = updatedEvent.withParticipantLimit(updateRequest.getParticipantLimit());
+        }
+        if (updateRequest.getRequestModeration() != null) {
+            updatedEvent = updatedEvent.withModeration(updateRequest.getRequestModeration());
+        }
+        if (updateRequest.getEventState() != null) {
+            if (event.getState() == EventState.PUBLISHED) {
+                updatedEvent = updatedEvent.withPublishedDate(LocalDateTime.now(clock));
+            }
+            updatedEvent = updatedEvent.withState(updateRequest.getEventState());
+        }
+        if (updateRequest.getTitle() != null) {
+            updatedEvent = updatedEvent.withTitle(updateRequest.getTitle());
+        }
+        return updatedEvent;
+    }
+
+    public Event partialEventUpdate(Event event, Category category, UpdateEventRequest updateRequest) {
+        Event updatedEvent = partialEventUpdate(event, updateRequest);
+
+        if (category != null) {
+            updatedEvent = updatedEvent.withCategory(category);
+        }
+        return updatedEvent;
+    }
+
+    public Event toEvent(User user, Category category, NewEventRequest eventRequest) {
+        if (eventRequest.getEventDate().isBefore(LocalDateTime.now(clock).plusHours(2))) {
+            throw new EwmIlligalArgumentException("Event must not be earlier than 2 hours");
+        }
+
+        return Event.builder()
+                .annotation(eventRequest.getAnnotation())
+                .category(category)
+                .confirmedRequests(0)
+                .createdDate(LocalDateTime.now(clock))
+                .description(eventRequest.getDescription())
+                .eventDate(eventRequest.getEventDate())
+                .initiator(user)
+                .location(eventRequest.getLocation())
+                .paid(eventRequest.getPaid())
+                .participantLimit(eventRequest.getParticipantLimit())
+                .moderation(eventRequest.getRequestModeration())
+                .state(EventState.PENDING)
+                .title(eventRequest.getTitle())
+                .views(0).build();
+    }
+
 }

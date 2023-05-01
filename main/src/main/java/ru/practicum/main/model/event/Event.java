@@ -13,13 +13,14 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@With
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String annotation;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     Category category;
     @With
@@ -30,7 +31,7 @@ public class Event {
     String description;
     @Column(name = "event_date")
     LocalDateTime eventDate;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id")
     User initiator;
     @Embedded

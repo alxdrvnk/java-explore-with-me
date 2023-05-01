@@ -2,6 +2,7 @@ package ru.practicum.main.controller.adminapi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.main.dto.category.CategoryDto;
@@ -22,7 +23,7 @@ public class AdminCategoryController implements AdminCategoryApi {
     public ResponseEntity<CategoryDto> createCategory(NewCategoryDto newCategoryDto) {
         log.info("Admin request for create Category with data:{}", newCategoryDto);
         Category category = categoryService.createCategory(categoryMapper.toCategory(newCategoryDto));
-        return ResponseEntity.ok(categoryMapper.toCategoryDto(category));
+        return new ResponseEntity(categoryMapper.toCategoryDto(category), HttpStatus.CREATED);
     }
 
     @Override

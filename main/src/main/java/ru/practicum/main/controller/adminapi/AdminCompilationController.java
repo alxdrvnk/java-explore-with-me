@@ -2,6 +2,7 @@ package ru.practicum.main.controller.adminapi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.main.dto.compilation.CompilationDto;
@@ -23,7 +24,7 @@ public class AdminCompilationController implements AdminCompilationApi {
     public ResponseEntity<CompilationDto> createCompilation(NewCompilationDto compilationDto) {
         log.info("Admin request for create Compilation with data: {}", compilationDto);
         Compilation compilation = compilationService.createCompilation(compilationMapper.toCompilation(compilationDto));
-        return ResponseEntity.ok(compilationMapper.toCompilationDto(compilation));
+        return new ResponseEntity(compilationMapper.toCompilationDto(compilation), HttpStatus.CREATED);
     }
 
     @Override

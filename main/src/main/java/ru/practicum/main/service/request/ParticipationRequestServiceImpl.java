@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j(topic = "Participation Request Service")
 @Service
@@ -37,24 +38,12 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     @Override
     @Transactional
-    //TODO: Возможно стоит вынести провеку события в отдельный метод
     public ParticipationRequest createRequest(Long userId, Long eventId) {
         log.info("User with id: {} create Request on event with id: {}", userId, eventId);
 
         User user = userService.getUserById(userId);
         Event event = eventService.getEventById(eventId);
-        if (event.getInitiator().getId() == user.getId()) {
-            throw new EwmIlligalArgumentException(String.format("User with id: %d is initiator", userId));
-        }
-
-        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() == event.getParticipantLimit()) {
-            throw new EwmIlligalArgumentException(String.format("No vacancies left for Event with id: %d", eventId));
-        }
-
-        if (event.getState() == EventState.PUBLISHED){
-            throw new EwmIlligalArgumentException(String.format("Event with id: %d not published", eventId));
-        }
-
+        validateEvent(event, user);
         ParticipationRequest request = ParticipationRequest.builder()
                 .event(event)
                 .requester(user)
@@ -87,5 +76,31 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         request = request.withStatus(RequestStatus.CANCELED);
 
         return requestRepository.save(request);
+    }
+
+    @Override
+    public Collection<ParticipationRequest> getAllByIds(List<Long> requestIds) {
+        return requestRepository.findAllById(requestIds);
+    }
+
+    @Override
+    public void updateRequests(Collection<ParticipationRequest> eventRequests) {
+        requestRepository.saveAll(eventRequests);
+    }
+
+    private void validateEvent(Event event, User user) {
+
+        if (event.getInitiator().getId() == user.getId()) {
+            throw new EwmIlligalArgumentException(String.format("User with id: %d is initiator", user.getId()));
+        }
+
+        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() == event.getParticipantLimit()) {
+            throw new EwmIlligalArgumentException(String.format("No vacancies left for Event with id: %d",
+                    event.getId()));
+        }
+
+        if (event.getState() == EventState.PUBLISHED) {
+            throw new EwmIlligalArgumentException(String.format("Event with id: %d not published", event.getId()));
+        }
     }
 }

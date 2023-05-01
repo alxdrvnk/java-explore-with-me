@@ -17,10 +17,10 @@ public class ParticipationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     Event event;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id")
     User requester;
     @Column(name = "created_date")

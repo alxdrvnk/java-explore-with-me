@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.main.dto.event.EventFullDto;
 import ru.practicum.main.dto.event.EventSearchFilter;
-import ru.practicum.main.dto.event.UpdateEvenAdminRequest;
+import ru.practicum.main.dto.event.UpdateEventAdminRequestDto;
 import ru.practicum.main.mapper.event.EventMapper;
 import ru.practicum.main.model.event.Event;
 import ru.practicum.main.service.event.EventService;
@@ -23,12 +23,15 @@ public class AdminEventController implements AdminEventApi {
     @Override
     public ResponseEntity<Collection<EventFullDto>> getAllEvents(EventSearchFilter eventSearchFilter) {
         Collection<Event> events = eventService.getAllEvents(eventSearchFilter);
-        return ResponseEntity.ok(eventMapper.toEventFullDtoList(events));
+        return ResponseEntity.ok(
+                eventMapper.toEventFullDtoList(events));
     }
 
     @Override
-    public ResponseEntity<EventFullDto> updateEvent(Long id, UpdateEvenAdminRequest updateRequest) {
+    public ResponseEntity<EventFullDto> updateEvent(Long id, UpdateEventAdminRequestDto updateRequest) {
         log.info("Admin update Event with data: {}", updateRequest);
-        return ResponseEntity.ok(eventMapper.toEventFullDto(eventService.updateEventByAdmin(id, updateRequest)));
+        return ResponseEntity.ok(
+                eventMapper.toEventFullDto(eventService.updateEventByAdmin(
+                        id, eventMapper.toUpdateEventRequest(updateRequest))));
     }
 }

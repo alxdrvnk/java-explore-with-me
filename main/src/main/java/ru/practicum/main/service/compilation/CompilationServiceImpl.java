@@ -12,7 +12,7 @@ import ru.practicum.main.repository.CompilationRepository;
 import javax.transaction.Transactional;
 import java.util.Collection;
 
-@Slf4j(topic = "Compilation Sevice")
+@Slf4j(topic = "Compilation Service")
 @Service
 @RequiredArgsConstructor
 public class CompilationServiceImpl implements CompilationService {
@@ -55,6 +55,6 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public Compilation getCompilationBy(Long id) {
         return compilationRepository.findById(id).orElseThrow(
-                () -> new EwmNotFoundException(String.format("Compilaton with id %d not found", id)));
+                () -> new EwmNotFoundException(String.format("Compilation with Id %d not found", id)));
     }
 }

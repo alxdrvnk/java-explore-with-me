@@ -2,75 +2,176 @@ package ru.practicum.main.service.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.practicum.main.dto.event.EventRequestStatusUpdateResult;
+import ru.practicum.main.configuration.ClockConfig;
+import ru.practicum.main.converter.DateTimeConverter;
 import ru.practicum.main.dto.event.EventSearchFilter;
-import ru.practicum.main.dto.event.UpdateEvenAdminRequest;
+import ru.practicum.main.exception.EwmIlligalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
-import ru.practicum.main.model.event.Event;
-import ru.practicum.main.model.event.EventRequestStatusUpdateRequest;
+import ru.practicum.main.mapper.event.EventMapper;
+import ru.practicum.main.model.category.Category;
+import ru.practicum.main.model.event.*;
 import ru.practicum.main.model.request.ParticipationRequest;
+import ru.practicum.main.model.request.RequestStatus;
+import ru.practicum.main.model.user.User;
 import ru.practicum.main.repository.EventRepositoy;
+import ru.practicum.main.repository.specification.EventSpecification;
+import ru.practicum.main.service.category.CategoryService;
+import ru.practicum.main.service.request.ParticipationRequestService;
+import ru.practicum.main.service.user.UserService;
+import ru.practicum.stats.client.StatsClient;
+import ru.practicum.stats.dto.ViewStatsDto;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j(topic = "Event Service")
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
-
+    private final StatsClient statsClient;
     private final EventRepositoy eventRepositoy;
+    private final EventMapper eventMapper;
+    private final CategoryService categoryService;
+    private final UserService userService;
+    private final ParticipationRequestService requestService;
+    private final Clock clock;
 
+    @Value("${app.name}")
+    private String appName;
     @Override
     public Collection<Event> getAllEvents(EventSearchFilter eventSearchFilter) {
-        return null;
+        EventSpecification spec = new EventSpecification(eventSearchFilter,
+                new DateTimeConverter(), new ClockConfig().clock());
+        PageRequest pageRequest = PageRequest.of(eventSearchFilter.getFrom() / eventSearchFilter.getSize(),
+                eventSearchFilter.getSize());
+        return eventRepositoy.findAll(spec, pageRequest).getContent();
     }
 
     @Override
-    public Event updateEventByAdmin(Long id, UpdateEvenAdminRequest updateRequest) {
-        return null;
+    @Transactional
+    public Event updateEventByAdmin(Long id, UpdateEventRequest updateRequest) {
+        validateEventDate(updateRequest.getEventDate());
+        Event event = getEventById(id);
+        Category category = categoryService.getById(updateRequest.getCategoryId());
+        return eventRepositoy.save(eventMapper.partialEventUpdate(event, category, updateRequest));
     }
 
     @Override
-    public Event createEvent(Long userId, Event event) {
-        return null;
+    @Transactional
+    public Event createEvent(Long userId, NewEventRequest eventRequest) {
+        User user = userService.getUserById(userId);
+        Category category = categoryService.getById(eventRequest.getCategoryId());
+        return eventRepositoy.save(eventMapper.toEvent(user, category, eventRequest));
     }
 
     @Override
-    public Event updateEventById(Long userId, Long eventId, Event event) {
-        return null;
+    @Transactional
+    public Event updateEventById(Long userId, Long eventId, UpdateEventRequest updateRequest) {
+        validateEventDate(updateRequest.getEventDate());
+
+        userService.getUserById(userId);
+        Event event = getEventById(eventId);
+        if (userId != event.getInitiator().getId()) {
+            throw new EwmIlligalArgumentException(
+                    String.format("User with id: %d not initiator of Event with id: %d", userId, eventId));
+        }
+
+        if (event.getState() == EventState.PUBLISHED) {
+            throw new EwmIlligalArgumentException("Cannot edit Event when is Published");
+        }
+
+        return eventRepositoy.save(eventMapper.partialEventUpdate(event, updateRequest));
     }
 
     @Override
     public Collection<Event> getEventByUser(Long userId, Integer from, Integer size) {
-        return null;
+        User user = userService.getUserById(userId);
+        return eventRepositoy.findByInitiator(user, PageRequest.of(from / size, size));
     }
 
     @Override
     public Event getEventByIdPrivate(Long userId, Long eventId) {
-        return null;
+        User user = userService.getUserById(userId);
+        return eventRepositoy.findByIdAndInitiator(eventId, user).orElseThrow(() ->
+                new EwmNotFoundException(
+                        String.format("Event with id: %d do not belong to User with id: %d", eventId, userId)));
     }
 
     @Override
     public Event getEventByIdPublic(Long id, String uri, String ip) {
-        return null;
+        statsClient.saveRequest(appName, uri, ip, LocalDateTime.now(clock));
+        Event event = eventRepositoy.findByIdAndStateIs(id, EventState.PUBLISHED).orElseThrow(() ->
+                new EwmNotFoundException(String.format("Event with id: %d not found or it not published", id)));
+        return getViewsStat(List.of(event), uri).stream().findFirst().get();
     }
 
     @Override
     public Collection<ParticipationRequest> getEventRequests(Long userId, Long eventId) {
-        return null;
+        userService.getUserById(userId);
+        Event event = getEventById(eventId);
+        if (event.getInitiator().getId() != userId) {
+            throw new EwmIlligalArgumentException(String.format("User with id: %d not initiator", userId));
+        }
+        return requestService.getRequestsByUser(userId);
     }
 
     @Override
-    public EventRequestStatusUpdateResult updateEventRequests(Long userId, Long eventId, EventRequestStatusUpdateRequest request) {
-        return null;
+    @Transactional
+    public EventRequestStatusUpdateResult updateEventRequests(Long userId,
+                                                              Long eventId,
+                                                              EventRequestStatusUpdateRequest request) {
+        userService.getUserById(userId);
+        Event event = getEventById(eventId);
+        int confirmsCount = event.getConfirmedRequests();
+        Collection<ParticipationRequest> eventRequests = requestService.getAllByIds(request.getRequestIds());
+        Set<ParticipationRequest> confirmedRequests = new HashSet<>();
+        Set<ParticipationRequest> rejectedRequests = new HashSet<>();
+        if (event.getModeration().equals(Boolean.TRUE) || event.getParticipantLimit() != 0) {
+            for (ParticipationRequest er : eventRequests) {
+                if (!er.getStatus().equals(RequestStatus.PENDING)) {
+                    throw new EwmIlligalArgumentException(
+                            String.format("Request with id: %d must be in \"PENDING\" status", er.getId()));
+                }
+                if (confirmsCount != event.getParticipantLimit()
+                        && request.getStatus().equals(RequestStatus.CONFIRMED)) {
+                    er = er.withStatus(RequestStatus.CONFIRMED);
+                    confirmedRequests.add(er);
+                    confirmsCount += 1;
+                } else {
+                    er = er.withStatus(RequestStatus.REJECTED);
+                    rejectedRequests.add(er);
+                }
+            }
+        }
+        event = event.withConfirmedRequests(confirmsCount);
+
+        requestService.updateRequests(eventRequests);
+        eventRepositoy.save(event);
+        return EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(confirmedRequests)
+                .rejectedRequests(rejectedRequests).build();
     }
 
     @Override
-    //TODO: add stats client
-    public Collection<Event> getAllEvents(EventSearchFilter filter, String uri, String api) {
-        return null;
+    public Collection<Event> getAllEvents(EventSearchFilter filter, String uri, String ip) {
+        statsClient.saveRequest(appName, uri, ip, LocalDateTime.now(clock));
+        PageRequest pageRequest = PageRequest.of(filter.getFrom() / filter.getSize(), filter.getSize());
+        EventSpecification spec = new EventSpecification(filter,
+                new DateTimeConverter(), new ClockConfig().clock());
+
+        List<Event> eventList = eventRepositoy.findAll(spec, pageRequest).getContent();
+
+        if (eventList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return getViewsStat(eventList, uri);
     }
 
     @Override
@@ -97,4 +198,22 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private void validateEventDate(LocalDateTime eventDate) {
+        if (eventDate.isBefore(LocalDateTime.now(clock).plusHours(1))) {
+            throw new EwmIlligalArgumentException("Start date must be least 1 hour before");
+        }
+    }
+
+    private Collection<Event> getViewsStat(List<Event> eventList, String uri) {
+        List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
+        LocalDateTime start = LocalDateTime.MIN; //Возможно стоит вынести в отдельную переменную
+        List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(clock), uris, false);
+
+        Map<String, Long> mappedStatsByUri = stats.stream()
+                .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
+
+        return eventList.stream()
+                .map(event -> event.withViews(
+                        mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
+    }
 }

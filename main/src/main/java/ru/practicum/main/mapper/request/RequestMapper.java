@@ -3,9 +3,10 @@ package ru.practicum.main.mapper.request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.main.converter.DateTimeConverter;
-import ru.practicum.main.dto.event.EventRequestStatusUpdateRequestDto;
+import ru.practicum.main.dto.event.EventRequestStatusUpdateResultDto;
 import ru.practicum.main.dto.request.ParticipationRequestDto;
 import ru.practicum.main.model.event.Event;
+import ru.practicum.main.model.event.EventRequestStatusUpdateResult;
 import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.model.request.RequestStatus;
 import ru.practicum.main.model.user.User;
@@ -43,5 +44,13 @@ public class RequestMapper {
         return requests.stream().map(this::toParticipationRequestDto).collect(Collectors.toList());
     }
 
+    public EventRequestStatusUpdateResultDto toEventRequestStatusUpdateResultDto(EventRequestStatusUpdateResult result) {
+        return EventRequestStatusUpdateResultDto.builder()
+                .confirmedRequests(result.getConfirmedRequests().stream()
+                        .map(this::toParticipationRequestDto).collect(Collectors.toList()))
+                .rejectedRequests(result.getRejectedRequests().stream()
+                        .map(this::toParticipationRequestDto).collect(Collectors.toList()))
+                .build();
+    }
 }
 

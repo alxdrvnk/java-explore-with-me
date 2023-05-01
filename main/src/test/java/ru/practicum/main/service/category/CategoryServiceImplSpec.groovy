@@ -1,4 +1,4 @@
-package ru.practicum.main.service.admin
+package ru.practicum.main.service.category
 
 import spock.lang.Specification
 

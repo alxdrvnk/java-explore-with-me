@@ -1,12 +1,10 @@
-package ru.practicum.main.service.admin
+package ru.practicum.main.service.user
 
 import ru.practicum.main.exception.EwmAlreadyExistsException
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.model.user.User
 import ru.practicum.main.repository.UserRepository
-import ru.practicum.main.service.user.UserServiceImpl
 import spock.lang.Specification
-
 
 class UserServiceImplSpec extends Specification {
     def "Should throw EwmAlreadyExistsException when create User with existing email"() {

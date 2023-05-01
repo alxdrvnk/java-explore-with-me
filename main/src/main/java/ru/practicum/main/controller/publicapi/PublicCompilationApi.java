@@ -15,6 +15,7 @@ public interface PublicCompilationApi {
     ResponseEntity<Collection<CompilationDto>> getCompilations(@RequestParam(required = false) Boolean pinned,
                                                                @RequestParam(defaultValue = "0") Integer from,
                                                                @RequestParam(defaultValue = "10") Integer size);
+
     @GetMapping("/{id}")
-    ResponseEntity<CompilationDto> getCompilationById(@PathVariable("ic") Long id);
+    ResponseEntity<CompilationDto> getCompilationById(@PathVariable("id") Long id);
 }
