@@ -62,7 +62,7 @@ public class EventSpecification implements Specification<Event> {
                             root.get("eventDate"),
                             converter.formatDate(LocalDateTime.now(clock))));
         }
-        if (filter.isOnlyAvailable()) {
+        if (filter.getOnlyAvailable()) {
             predicates.add(
                     criteriaBuilder.lessThan(root.get("confirmedRequests"), root.get("participantLimit")));
         }
