@@ -17,6 +17,7 @@ import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.model.request.RequestStatus;
 import ru.practicum.main.model.user.User;
 import ru.practicum.main.repository.EventRepository;
+import ru.practicum.main.repository.RequestRepository;
 import ru.practicum.main.repository.specification.EventSpecification;
 import ru.practicum.main.service.category.CategoryService;
 import ru.practicum.main.service.request.ParticipationRequestService;
@@ -39,7 +40,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final CategoryService categoryService;
     private final UserService userService;
-    private final ParticipationRequestService requestService;
+    private final RequestRepository requestRepository;
     private final Clock clock;
 
     @Value("${app.name}")
@@ -113,12 +114,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Collection<ParticipationRequest> getEventRequests(Long userId, Long eventId) {
-        userService.getUserById(userId);
+        User user = userService.getUserById(userId);
         Event event = getEventById(eventId);
         if (event.getInitiator().getId() != userId) {
             throw new EwmIlligalArgumentException(String.format("User with id: %d not initiator", userId));
         }
-        return requestService.getRequestsByUser(userId);
+        return requestRepository.findByRequester(user);
     }
 
     @Override
@@ -129,7 +130,7 @@ public class EventServiceImpl implements EventService {
         userService.getUserById(userId);
         Event event = getEventById(eventId);
         int confirmsCount = event.getConfirmedRequests();
-        Collection<ParticipationRequest> eventRequests = requestService.getAllByIds(request.getRequestIds());
+        Collection<ParticipationRequest> eventRequests = requestRepository.findAllById(request.getRequestIds());
         Set<ParticipationRequest> confirmedRequests = new HashSet<>();
         Set<ParticipationRequest> rejectedRequests = new HashSet<>();
         if (event.getModeration().equals(Boolean.TRUE) || event.getParticipantLimit() != 0) {
@@ -151,7 +152,7 @@ public class EventServiceImpl implements EventService {
         }
         event = event.withConfirmedRequests(confirmsCount);
 
-        requestService.updateRequests(eventRequests);
+        requestRepository.saveAll(eventRequests);
         eventRepository.save(event);
         return EventRequestStatusUpdateResult.builder()
                 .confirmedRequests(confirmedRequests)

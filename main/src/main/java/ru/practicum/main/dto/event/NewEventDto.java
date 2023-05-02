@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 import ru.practicum.main.converter.DateTimeConverter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Value
 @Builder
@@ -26,6 +23,7 @@ public class NewEventDto {
     @NotNull
     LocationDto location;
     Boolean paid;
+    @PositiveOrZero
     Integer participantLimit;
     Boolean requestModeration;
     @NotBlank
@@ -47,7 +45,11 @@ public class NewEventDto {
         this.eventDate = eventDate;
         this.location = location;
         this.paid = paid;
-        this.participantLimit = participantLimit;
+        if (participantLimit == null || participantLimit < 0) {
+            this.participantLimit = 0;
+        } else {
+            this.participantLimit = participantLimit;
+        }
         this.requestModeration = requestModeration;
         this.title = title;
     }

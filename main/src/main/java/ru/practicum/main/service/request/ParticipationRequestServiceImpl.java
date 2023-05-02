@@ -2,6 +2,7 @@ package ru.practicum.main.service.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.exception.EwmIlligalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
@@ -27,6 +28,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     private final RequestRepository requestRepository;
     private final UserService userService;
+    @Lazy
     private final EventService eventService;
     private final Clock clock;
 
