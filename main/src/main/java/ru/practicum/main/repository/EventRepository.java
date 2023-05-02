@@ -10,7 +10,7 @@ import ru.practicum.main.model.user.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface EventRepositoy extends JpaRepository<Event, Long>, JpaSpecificationExecutor {
+public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor {
 
     List<Event> findByInitiator(User user, PageRequest pageRequest);
 

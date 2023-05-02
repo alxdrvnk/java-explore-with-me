@@ -16,7 +16,7 @@ import ru.practicum.main.model.event.*;
 import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.model.request.RequestStatus;
 import ru.practicum.main.model.user.User;
-import ru.practicum.main.repository.EventRepositoy;
+import ru.practicum.main.repository.EventRepository;
 import ru.practicum.main.repository.specification.EventSpecification;
 import ru.practicum.main.service.category.CategoryService;
 import ru.practicum.main.service.request.ParticipationRequestService;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
     private final StatsClient statsClient;
-    private final EventRepositoy eventRepositoy;
+    private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final CategoryService categoryService;
     private final UserService userService;
@@ -50,7 +50,7 @@ public class EventServiceImpl implements EventService {
                 new DateTimeConverter(), new ClockConfig().clock());
         PageRequest pageRequest = PageRequest.of(eventSearchFilter.getFrom() / eventSearchFilter.getSize(),
                 eventSearchFilter.getSize());
-        return eventRepositoy.findAll(spec, pageRequest).getContent();
+        return eventRepository.findAll(spec, pageRequest).getContent();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
         validateEventDate(updateRequest.getEventDate());
         Event event = getEventById(id);
         Category category = categoryService.getById(updateRequest.getCategoryId());
-        return eventRepositoy.save(eventMapper.partialEventUpdate(event, category, updateRequest));
+        return eventRepository.save(eventMapper.partialEventUpdate(event, category, updateRequest));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class EventServiceImpl implements EventService {
     public Event createEvent(Long userId, NewEventRequest eventRequest) {
         User user = userService.getUserById(userId);
         Category category = categoryService.getById(eventRequest.getCategoryId());
-        return eventRepositoy.save(eventMapper.toEvent(user, category, eventRequest));
+        return eventRepository.save(eventMapper.toEvent(user, category, eventRequest));
     }
 
     @Override
@@ -86,19 +86,19 @@ public class EventServiceImpl implements EventService {
             throw new EwmIlligalArgumentException("Cannot edit Event when is Published");
         }
 
-        return eventRepositoy.save(eventMapper.partialEventUpdate(event, updateRequest));
+        return eventRepository.save(eventMapper.partialEventUpdate(event, updateRequest));
     }
 
     @Override
     public Collection<Event> getEventByUser(Long userId, Integer from, Integer size) {
         User user = userService.getUserById(userId);
-        return eventRepositoy.findByInitiator(user, PageRequest.of(from / size, size));
+        return eventRepository.findByInitiator(user, PageRequest.of(from / size, size));
     }
 
     @Override
     public Event getEventByIdPrivate(Long userId, Long eventId) {
         User user = userService.getUserById(userId);
-        return eventRepositoy.findByIdAndInitiator(eventId, user).orElseThrow(() ->
+        return eventRepository.findByIdAndInitiator(eventId, user).orElseThrow(() ->
                 new EwmNotFoundException(
                         String.format("Event with id: %d do not belong to User with id: %d", eventId, userId)));
     }
@@ -106,7 +106,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event getEventByIdPublic(Long id, String uri, String ip) {
         statsClient.saveRequest(appName, uri, ip, LocalDateTime.now(clock));
-        Event event = eventRepositoy.findByIdAndStateIs(id, EventState.PUBLISHED).orElseThrow(() ->
+        Event event = eventRepository.findByIdAndStateIs(id, EventState.PUBLISHED).orElseThrow(() ->
                 new EwmNotFoundException(String.format("Event with id: %d not found or it not published", id)));
         return getViewsStat(List.of(event), uri).stream().findFirst().get();
     }
@@ -152,7 +152,7 @@ public class EventServiceImpl implements EventService {
         event = event.withConfirmedRequests(confirmsCount);
 
         requestService.updateRequests(eventRequests);
-        eventRepositoy.save(event);
+        eventRepository.save(event);
         return EventRequestStatusUpdateResult.builder()
                 .confirmedRequests(confirmedRequests)
                 .rejectedRequests(rejectedRequests).build();
@@ -165,7 +165,7 @@ public class EventServiceImpl implements EventService {
         EventSpecification spec = new EventSpecification(filter,
                 new DateTimeConverter(), new ClockConfig().clock());
 
-        List<Event> eventList = eventRepositoy.findAll(spec, pageRequest).getContent();
+        List<Event> eventList = eventRepository.findAll(spec, pageRequest).getContent();
 
         if (eventList.isEmpty()) {
             return Collections.emptyList();
@@ -176,7 +176,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getEventById(Long eventId) {
-        return eventRepositoy.findById(eventId).orElseThrow(
+        return eventRepository.findById(eventId).orElseThrow(
                 () -> new EwmNotFoundException(String.format("Event wih id: %d not found", eventId)));
     }
 
@@ -185,7 +185,7 @@ public class EventServiceImpl implements EventService {
     public void decreaseConfirmRequests(Event event) {
         log.info("Decrease count of Confirmed requests for Event with id: {}",event.getId());
         if (event.getConfirmedRequests() > 0) {
-            eventRepositoy.save(event.withConfirmedRequests(event.getConfirmedRequests() - 1));
+            eventRepository.save(event.withConfirmedRequests(event.getConfirmedRequests() - 1));
         }
     }
 
@@ -194,7 +194,7 @@ public class EventServiceImpl implements EventService {
     public void increaseConfirmedRequests(Event event) {
         log.info("Increase confirmed Requests for Event with id: {}", event.getId());
         if (event.getParticipantLimit() == 0 || event.getParticipantLimit() != event.getConfirmedRequests()) {
-            eventRepositoy.save(event.withConfirmedRequests(event.getConfirmedRequests() + 1));
+            eventRepository.save(event.withConfirmedRequests(event.getConfirmedRequests() + 1));
         }
     }
 
