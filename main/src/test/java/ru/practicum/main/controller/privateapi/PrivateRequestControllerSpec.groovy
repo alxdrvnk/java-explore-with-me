@@ -1,18 +1,14 @@
 package ru.practicum.main.controller.privateapi
 
-import groovy.json.JsonBuilder
+
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import ru.practicum.main.controller.adminapi.AdminCategoryController
-import ru.practicum.main.dto.request.ParticipationRequestDto
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
 import ru.practicum.main.mapper.request.RequestMapper
-import ru.practicum.main.service.category.CategoryService
 import ru.practicum.main.service.request.ParticipationRequestService
 import spock.lang.Specification
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status

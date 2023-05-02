@@ -1,5 +1,6 @@
 package ru.practicum.main.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 
@@ -21,4 +22,26 @@ public class UpdateEventUserRequestDto {
     StateAction stateAction;
     @Size(min = 3, max = 120)
     String title;
+
+    public UpdateEventUserRequestDto(@JsonProperty(value = "annotation") String annotation,
+                                     @JsonProperty(value = "category") Long category,
+                                     @JsonProperty(value = "description") String description,
+                                     @JsonProperty(value = "eventDate") String eventDate,
+                                     @JsonProperty(value = "location") LocationDto location,
+                                     @JsonProperty(value = "paid") Boolean paid,
+                                     @JsonProperty(value = "participationLimit") Integer participantLimit,
+                                     @JsonProperty(value = "requestModeration") Boolean requestModeration,
+                                     @JsonProperty(value = "stateAction") StateAction stateAction,
+                                     @JsonProperty(value = "title") String title) {
+        this.annotation = annotation;
+        this.categoryId = category;
+        this.description = description;
+        this.eventDate = eventDate;
+        this.location = location;
+        this.paid = paid;
+        this.participantLimit = participantLimit;
+        this.requestModeration = requestModeration;
+        this.stateAction = stateAction;
+        this.title = title;
+    }
 }
