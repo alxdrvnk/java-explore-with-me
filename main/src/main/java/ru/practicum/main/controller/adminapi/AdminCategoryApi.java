@@ -16,6 +16,6 @@ public interface AdminCategoryApi extends AdminApi {
                                                @RequestBody @Valid CategoryDto categoryDto);
 
     @DeleteMapping("/categories/{id}")
-    void deleteCategory(@PathVariable("id") Long id);
+    ResponseEntity<Object> deleteCategory(@PathVariable("id") Long id);
 
 }

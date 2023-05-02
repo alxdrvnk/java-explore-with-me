@@ -27,7 +27,7 @@ public class MainServiceHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = EwmInternalServerException.class)
     protected ResponseEntity<Object> handlerInternalServerException(EwmInternalServerException exception,
-                                                                   WebRequest request) {
+                                                                    WebRequest request) {
         return handleExceptionInternal(
                 exception,
                 new EwmError(exception.getMessage()),
@@ -38,8 +38,8 @@ public class MainServiceHandler extends ResponseEntityExceptionHandler {
 
 
     @ExceptionHandler(value = EwmNotFoundException.class)
-    protected ResponseEntity<Object> handlerNotFoundException(EwmInternalServerException exception,
-                                                                   WebRequest request) {
+    protected ResponseEntity<Object> handlerNotFoundException(EwmNotFoundException exception,
+                                                              WebRequest request) {
         return handleExceptionInternal(
                 exception,
                 new EwmError(exception.getMessage()),

@@ -23,7 +23,7 @@ public class AdminCategoryController implements AdminCategoryApi {
     public ResponseEntity<CategoryDto> createCategory(NewCategoryDto newCategoryDto) {
         log.info("Admin request for create Category with data:{}", newCategoryDto);
         Category category = categoryService.createCategory(categoryMapper.toCategory(newCategoryDto));
-        return new ResponseEntity(categoryMapper.toCategoryDto(category), HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryMapper.toCategoryDto(category), HttpStatus.CREATED);
     }
 
     @Override
@@ -34,8 +34,9 @@ public class AdminCategoryController implements AdminCategoryApi {
     }
 
     @Override
-    public void deleteCategory(Long id) {
+    public ResponseEntity<Object> deleteCategory(Long id) {
         log.info("Admin delete request for Category with id: {}", id);
         categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }

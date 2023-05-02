@@ -62,7 +62,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+        try {
+            categoryRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new EwmNotFoundException(String.format("Category with id: %d not found", id));
+        }
     }
 
     @Override
