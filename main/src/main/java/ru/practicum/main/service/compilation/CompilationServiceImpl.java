@@ -39,7 +39,11 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public void deleteCompilation(Long id) {
         log.info("Delete Compilation with id: {}", id);
-        compilationRepository.deleteById(id);
+        try {
+            compilationRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new EwmNotFoundException(String.format("Compilation with id: %d not found", id));
+        }
     }
 
     @Override

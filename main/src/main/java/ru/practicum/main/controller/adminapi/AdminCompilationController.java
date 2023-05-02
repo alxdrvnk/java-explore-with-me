@@ -24,14 +24,15 @@ public class AdminCompilationController implements AdminCompilationApi {
     public ResponseEntity<CompilationDto> createCompilation(NewCompilationDto compilationDto) {
         log.info("Admin request for create Compilation with data: {}", compilationDto);
         Compilation compilation = compilationService.createCompilation(compilationMapper.toCompilation(compilationDto));
-        return new ResponseEntity(compilationMapper.toCompilationDto(compilation), HttpStatus.CREATED);
+        return new ResponseEntity<>(compilationMapper.toCompilationDto(compilation), HttpStatus.CREATED);
+
     }
 
     @Override
     public ResponseEntity<Object> deleteCompilation(Long id) {
         log.info("Admin delete request for Compilation with id: {}", id);
         compilationService.deleteCompilation(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Override
