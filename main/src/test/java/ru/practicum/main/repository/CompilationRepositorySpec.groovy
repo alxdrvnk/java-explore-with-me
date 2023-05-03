@@ -27,7 +27,8 @@ class CompilationRepositorySpec extends Specification {
     @Autowired
     private CompilationRepository repository
 
-    @DatabaseSetup(value = "classpath:database/compilation/set_event_initiator_category.xml", connection = "dbUnitDatabaseConnection")
+    @DatabaseSetup(value = "classpath:database/compilation/set_event_initiator_category.xml",
+            connection = "dbUnitDatabaseConnection")
     def "Should return Compilation with generated id"() {
         given:
         def initiator = User.builder()
@@ -74,7 +75,8 @@ class CompilationRepositorySpec extends Specification {
         dbCompilation.getId() == 1
     }
 
-    @DatabaseSetup(value = "classpath:database/compilation/set_compilation.xml", connection = "dbUnitDatabaseConnection")
+    @DatabaseSetup(value = "classpath:database/compilation/set_compilation.xml",
+            connection = "dbUnitDatabaseConnection")
     def "Should return compilation when get by id"() {
         given:
         def initiator = User.builder()

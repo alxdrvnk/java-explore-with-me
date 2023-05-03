@@ -13,6 +13,16 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedEntityGraph(
+        name = "compilation-events-graph",
+        attributeNodes = @NamedAttributeNode(value = "event", subgraph = "subgraph-event"),
+        subgraphs = {
+                @NamedSubgraph(name = "subgraph-event",
+                        attributeNodes = {
+                                @NamedAttributeNode(value = "initiator"),
+                                @NamedAttributeNode(value = "category")
+                        })
+        })
 public class ParticipationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

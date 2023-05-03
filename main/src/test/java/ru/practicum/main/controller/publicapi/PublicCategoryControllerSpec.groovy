@@ -32,11 +32,11 @@ class PublicCategoryControllerSpec extends Specification {
                 .andExpect(status().isOk())
         then:
         interaction {
-            1 * service.getAllCategories(0, 10) >> { List.of(Category.builder().build())}
+            1 * service.getAllCategories(0, 10) >> { List.of(Category.builder().build()) }
         }
     }
 
-    def "Should return 404 when not found category" () {
+    def "Should return 404 when not found category"() {
         given:
         def service = Mock(CategoryService)
         def categoryMapper = new CategoryMapper()
@@ -54,7 +54,7 @@ class PublicCategoryControllerSpec extends Specification {
                 .andExpect(status().isNotFound())
         then:
         interaction {
-            1 * service.getById(1L) >> { throw new EwmNotFoundException("")}
+            1 * service.getById(1L) >> { throw new EwmNotFoundException("") }
         }
     }
 }

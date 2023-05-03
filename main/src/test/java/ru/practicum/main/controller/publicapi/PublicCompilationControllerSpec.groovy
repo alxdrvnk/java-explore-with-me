@@ -37,7 +37,7 @@ class PublicCompilationControllerSpec extends Specification {
         }
     }
 
-    def "Should return 404 when not found compilation" () {
+    def "Should return 404 when not found compilation"() {
         given:
         def service = Mock(CompilationService)
         def compilationMapper = new CompilationMapper()

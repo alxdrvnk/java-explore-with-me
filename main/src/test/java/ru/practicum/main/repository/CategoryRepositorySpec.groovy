@@ -34,7 +34,8 @@ class CategoryRepositorySpec extends Specification {
         dbCategory.getId() == 1
     }
 
-    @DatabaseSetup(value = "classpath:database/admin/categories/set_categories.xml", connection = "dbUnitDatabaseConnection")
+    @DatabaseSetup(value = "classpath:database/admin/categories/set_categories.xml",
+            connection = "dbUnitDatabaseConnection")
     def "Should return Category when get by id"() {
         when:
         def dbCategory = repository.findById(1L).get()

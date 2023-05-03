@@ -16,64 +16,63 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminUserControllerSpec extends Specification {
 
-   private final UserMapper userMapper = new UserMapper()
+    private final UserMapper userMapper = new UserMapper()
 
-   def "Should return 409 when create user with existed email"() {
-      given:
-      def service = Mock(UserService)
-      def controller = new AdminUserController(service, userMapper)
-      def server = MockMvcBuilders
-              .standaloneSetup(controller)
-              .setControllerAdvice(MainServiceHandler)
-              .build()
-      and:
-      def newUserRequest = NewUserRequest.builder()
-              .name("TestName")
-              .email("testmail@mail.mail")
-              .build()
+    def "Should return 409 when create user with existed email"() {
+        given:
+        def service = Mock(UserService)
+        def controller = new AdminUserController(service, userMapper)
+        def server = MockMvcBuilders
+                .standaloneSetup(controller)
+                .setControllerAdvice(MainServiceHandler)
+                .build()
+        and:
+        def newUserRequest = NewUserRequest.builder()
+                .name("TestName")
+                .email("testmail@mail.mail")
+                .build()
 
-      when:
-      def request = post("/admin/users")
-              .contentType(MediaType.APPLICATION_JSON_VALUE)
-              .content(new JsonBuilder(newUserRequest).toString())
+        when:
+        def request = post("/admin/users")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(new JsonBuilder(newUserRequest).toString())
 
-      and:
-      server.perform(request)
-              .andExpect(status().isConflict())
+        and:
+        server.perform(request)
+                .andExpect(status().isConflict())
 
-      then:
-      interaction {
-         1 * service.createUser(_ as User) >> { throw new EwmAlreadyExistsException("") }
-      }
-   }
+        then:
+        interaction {
+            1 * service.createUser(_ as User) >> { throw new EwmAlreadyExistsException("") }
+        }
+    }
 
-   def "Should return 201 when new user created"() {
-      given:
-      def service = Mock(UserService)
-      def controller = new AdminUserController(service, userMapper)
-      def server = MockMvcBuilders
-              .standaloneSetup(controller)
-              .setControllerAdvice(MainServiceHandler)
-              .build()
+    def "Should return 201 when new user created"() {
+        given:
+        def service = Mock(UserService)
+        def controller = new AdminUserController(service, userMapper)
+        def server = MockMvcBuilders
+                .standaloneSetup(controller)
+                .setControllerAdvice(MainServiceHandler)
+                .build()
 
-      and:
-      def newUserRequest = NewUserRequest.builder()
-              .name("TestName")
-              .email("testmail@mail.mail")
-              .build()
-      when:
-      def request = post("/admin/users")
-              .contentType(MediaType.APPLICATION_JSON_VALUE)
-              .content(new JsonBuilder(newUserRequest).toString())
+        and:
+        def newUserRequest = NewUserRequest.builder()
+                .name("TestName")
+                .email("testmail@mail.mail")
+                .build()
+        when:
+        def request = post("/admin/users")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(new JsonBuilder(newUserRequest).toString())
 
-      and:
-      server.perform(request)
-              .andExpect(status().isCreated())
+        and:
+        server.perform(request)
+                .andExpect(status().isCreated())
 
-      then:
-      interaction {
-         1 * service.createUser(_ as User) >> { User.builder().id(1L).name("").email("").build() }
-      }
-   }
-
+        then:
+        interaction {
+            1 * service.createUser(_ as User) >> { User.builder().id(1L).name("").email("").build() }
+        }
+    }
 }

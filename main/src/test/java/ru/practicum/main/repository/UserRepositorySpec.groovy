@@ -36,38 +36,41 @@ class UserRepositorySpec extends Specification {
         dbUser.getId() == 1
     }
 
-    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml", connection = "dbUnitDatabaseConnection")
-    def "Should return list of Users if search by ids" () {
+    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml",
+            connection = "dbUnitDatabaseConnection")
+    def "Should return list of Users if search by ids"() {
         when:
-        def listUsers = repository.findAllById(List.of(1L,2L))
+        def listUsers = repository.findAllById(List.of(1L, 2L))
         then:
         listUsers.size() == 2
         with(listUsers) {
-            id == [1,2]
+            id == [1, 2]
             name == ["firstTestName", "secondTestName"]
             email == ["firstTest@mail.mail", "secondTest@mail.mail"]
         }
     }
 
 
-    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml", connection = "dbUnitDatabaseConnection")
-    def "Should return list of Users if search without ids" () {
+    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml",
+            connection = "dbUnitDatabaseConnection")
+    def "Should return list of Users if search without ids"() {
         when:
         def listUsers = repository.findAll()
         then:
         listUsers.size() == 3
         with(listUsers) {
-            id == [1,2,3]
+            id == [1, 2, 3]
             name == ["firstTestName", "secondTestName", "thirdTestName"]
             email == ["firstTest@mail.mail", "secondTest@mail.mail", "thirdTest@mail.mail"]
         }
     }
 
 
-    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml", connection = "dbUnitDatabaseConnection")
-    def "Should return list of Users if search with pageable params" () {
+    @DatabaseSetup(value = "classpath:database/admin/users/set_users.xml",
+            connection = "dbUnitDatabaseConnection")
+    def "Should return list of Users if search with pageable params"() {
         when:
-        def listUsers = repository.findAll(PageRequest.of(0,1)).getContent()
+        def listUsers = repository.findAll(PageRequest.of(0, 1)).getContent()
         then:
         listUsers.size() == 1
         with(listUsers) {

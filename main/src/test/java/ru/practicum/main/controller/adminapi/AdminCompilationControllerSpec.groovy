@@ -124,7 +124,7 @@ class AdminCompilationControllerSpec extends Specification {
                 .andExpect(status().isOk())
         then:
         interaction {
-            1 * service.updateCompilation(9999L, _ as Compilation) >> { Compilation.builder().build()}
+            1 * service.updateCompilation(9999L, _ as Compilation) >> { Compilation.builder().build() }
         }
     }
 

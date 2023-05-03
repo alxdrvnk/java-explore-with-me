@@ -1,0 +1,40 @@
+<dataset>
+    <PUBLIC.USERS
+            id="1"
+            name="Initiator"
+            email="initiator@mail.mail"
+    />
+    <PUBLIC.USERS
+            id="2"
+            name="Requester"
+            email="requester@mail.mail"
+    />
+    <PUBLIC.CATEGORIES
+            id="1"
+            name="Test event category"
+    />
+    <PUBLIC.EVENTS
+            id="1"
+            annotation="Test event annotation"
+            category_id="1"
+            confirmed_requests="0"
+            created_date="2000-01-01 12:00:00"
+            description="Test event description"
+            event_date="2000-01-04 12:00:00"
+            initiator_id="1"
+            lat="0"
+            lon="0"
+            paid="False"
+            participant_limit="0"
+            request_moderation="False"
+            state="PENDING"
+            title="Test event title"
+    />
+    <PUBLIC.PARTICIPATION_REQUESTS
+            id="1"
+            event_id="1"
+            requester_id="2"
+            created_date="2000-01-01 12:00:00"
+            status="PENDING"
+    />
+</dataset>
