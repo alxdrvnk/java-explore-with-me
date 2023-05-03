@@ -75,12 +75,25 @@ class PrivateRequestControllerSpec extends Specification {
         }
     }
 
-    //TODO: Добавить тест на создание реквеста
     def "Should return 200 when create new request"() {
+        given:
+        def service = Mock(ParticipationRequestService)
+        def controller = new PrivateRequestController(service, Mock(RequestMapper))
+        def server = MockMvcBuilders
+                .standaloneSetup(controller)
+                .setControllerAdvice(MainServiceHandler)
+                .build()
 
-    }
-    //TODO: Добавить тест для обновления реквеста
-    def "Should return 200 when update request"() {
+        when:
+        def request = post("/users/1/requests?eventId=1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
 
+        and:
+        server.perform(request)
+                .andExpect(status().isCreated())
+        then:
+        interaction {
+            1 * service.createRequest(1L, 1L)
+        }
     }
 }

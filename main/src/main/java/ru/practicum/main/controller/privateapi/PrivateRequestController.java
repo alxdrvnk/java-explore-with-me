@@ -2,6 +2,7 @@ package ru.practicum.main.controller.privateapi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.main.dto.request.ParticipationRequestDto;
@@ -27,8 +28,9 @@ public class PrivateRequestController implements PrivateRequestApi {
     @Override
     public ResponseEntity<ParticipationRequestDto> createRequest(Long userId, Long eventId) {
         log.info("User with id: {} create Participation Request for Event with id: {}", userId, eventId);
-        return ResponseEntity.ok(
-                requestMapper.toParticipationRequestDto(requestService.createRequest(userId,eventId)));
+        return new ResponseEntity<>(
+                requestMapper.toParticipationRequestDto(requestService.createRequest(userId, eventId)),
+                HttpStatus.CREATED);
     }
 
     @Override
