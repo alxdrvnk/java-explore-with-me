@@ -60,13 +60,13 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(dbCategory.withName(category.getName()));
     }
 
+    //Необходимо выбрасывать ошибку
     @Override
     public void deleteCategory(Long id) {
-        try {
-            categoryRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new EwmNotFoundException(String.format("Category with id: %d not found", id));
+        if (!categoryRepository.existsById(id)) {
+            throw new EwmNotFoundException(String.format("Category with Id %d not found", id));
         }
+        categoryRepository.deleteById(id);
     }
 
     @Override
