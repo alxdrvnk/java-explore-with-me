@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import ru.practicum.main.exception.EwmIlligalArgumentException;
+import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.model.event.Event;
 import ru.practicum.main.model.event.EventState;
@@ -67,7 +67,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
                 () -> new EwmNotFoundException(String.format("Participation Request with id: %d not found", userId)));
 
         if (request.getRequester().getId() != userId){
-            throw new EwmIlligalArgumentException(String.format("User with id: %d doesn't create Request with id: %d",
+            throw new EwmIllegalArgumentException(String.format("User with id: %d doesn't create Request with id: %d",
                     userId, requestId));
         }
 
@@ -93,16 +93,16 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     private void validateEvent(Event event, User user) {
 
         if (event.getInitiator().getId() == user.getId()) {
-            throw new EwmIlligalArgumentException(String.format("User with id: %d is initiator", user.getId()));
+            throw new EwmIllegalArgumentException(String.format("User with id: %d is initiator", user.getId()));
         }
 
         if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() == event.getParticipantLimit()) {
-            throw new EwmIlligalArgumentException(String.format("No vacancies left for Event with id: %d",
+            throw new EwmIllegalArgumentException(String.format("No vacancies left for Event with id: %d",
                     event.getId()));
         }
 
-        if (event.getState() == EventState.PUBLISHED) {
-            throw new EwmIlligalArgumentException(String.format("Event with id: %d not published", event.getId()));
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new EwmIllegalArgumentException(String.format("Event with id: %d not published", event.getId()));
         }
     }
 }

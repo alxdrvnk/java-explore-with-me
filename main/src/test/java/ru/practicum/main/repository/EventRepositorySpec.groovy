@@ -67,7 +67,7 @@ class EventRepositorySpec extends Specification {
                 .build()
 
         when:
-        def dbEvent = repository.save(event);
+        def dbEvent = repository.save(event)
 
         then:
         dbEvent.getId() == 1

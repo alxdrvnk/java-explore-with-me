@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.main.converter.DateTimeConverter;
 import ru.practicum.main.dto.event.*;
-import ru.practicum.main.exception.EwmIlligalArgumentException;
+import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.mapper.category.CategoryMapper;
 import ru.practicum.main.mapper.user.UserMapper;
 import ru.practicum.main.model.category.Category;
@@ -193,7 +193,7 @@ public class EventMapper {
 
     public Event toEvent(User user, Category category, NewEventRequest eventRequest) {
         if (eventRequest.getEventDate().isBefore(LocalDateTime.now(clock).plusHours(2))) {
-            throw new EwmIlligalArgumentException("Event must not be earlier than 2 hours");
+            throw new EwmIllegalArgumentException("Event must not be earlier than 2 hours");
         }
 
         return Event.builder()

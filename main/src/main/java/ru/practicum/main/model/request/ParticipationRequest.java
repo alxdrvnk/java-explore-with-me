@@ -14,8 +14,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @NamedEntityGraph(
-        name = "compilation-events-graph",
-        attributeNodes = @NamedAttributeNode(value = "event", subgraph = "subgraph-event"),
+        name = "participation-events-graph-requester",
+        attributeNodes = {
+                @NamedAttributeNode(value = "requester"),
+                @NamedAttributeNode(value = "event", subgraph = "subgraph-event")
+        },
         subgraphs = {
                 @NamedSubgraph(name = "subgraph-event",
                         attributeNodes = {
@@ -27,10 +30,10 @@ public class ParticipationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "event_id")
     Event event;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "requester_id")
     User requester;
     @Column(name = "created_date")

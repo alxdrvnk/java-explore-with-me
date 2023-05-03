@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.main.configuration.ClockConfig;
 import ru.practicum.main.converter.DateTimeConverter;
 import ru.practicum.main.dto.event.EventSearchFilter;
-import ru.practicum.main.exception.EwmIlligalArgumentException;
+import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.mapper.event.EventMapper;
 import ru.practicum.main.model.category.Category;
@@ -20,7 +20,6 @@ import ru.practicum.main.repository.EventRepository;
 import ru.practicum.main.repository.RequestRepository;
 import ru.practicum.main.repository.specification.EventSpecification;
 import ru.practicum.main.service.category.CategoryService;
-import ru.practicum.main.service.request.ParticipationRequestService;
 import ru.practicum.main.service.user.UserService;
 import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.ViewStatsDto;
@@ -79,12 +78,12 @@ public class EventServiceImpl implements EventService {
         userService.getUserById(userId);
         Event event = getEventById(eventId);
         if (userId != event.getInitiator().getId()) {
-            throw new EwmIlligalArgumentException(
+            throw new EwmIllegalArgumentException(
                     String.format("User with id: %d not initiator of Event with id: %d", userId, eventId));
         }
 
         if (event.getState() == EventState.PUBLISHED) {
-            throw new EwmIlligalArgumentException("Cannot edit Event when is Published");
+            throw new EwmIllegalArgumentException("Cannot edit Event when is Published");
         }
 
         return eventRepository.save(eventMapper.partialEventUpdate(event, updateRequest));
@@ -117,7 +116,7 @@ public class EventServiceImpl implements EventService {
         User user = userService.getUserById(userId);
         Event event = getEventById(eventId);
         if (event.getInitiator().getId() != userId) {
-            throw new EwmIlligalArgumentException(String.format("User with id: %d not initiator", userId));
+            throw new EwmIllegalArgumentException(String.format("User with id: %d not initiator", userId));
         }
         return requestRepository.findByRequester(user);
     }
@@ -136,7 +135,7 @@ public class EventServiceImpl implements EventService {
         if (event.getModeration().equals(Boolean.TRUE) || event.getParticipantLimit() != 0) {
             for (ParticipationRequest er : eventRequests) {
                 if (!er.getStatus().equals(RequestStatus.PENDING)) {
-                    throw new EwmIlligalArgumentException(
+                    throw new EwmIllegalArgumentException(
                             String.format("Request with id: %d must be in \"PENDING\" status", er.getId()));
                 }
                 if (confirmsCount != event.getParticipantLimit()
@@ -201,7 +200,7 @@ public class EventServiceImpl implements EventService {
 
     private void validateEventDate(LocalDateTime eventDate) {
         if (eventDate.isBefore(LocalDateTime.now(clock).plusHours(1))) {
-            throw new EwmIlligalArgumentException("Start date must be least 1 hour before");
+            throw new EwmIllegalArgumentException("Start date must be least 1 hour before");
         }
     }
 

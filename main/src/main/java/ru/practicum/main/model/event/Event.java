@@ -14,13 +14,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @With
+@NamedEntityGraph(
+        name = "event-category-initiator-graph",
+        attributeNodes = {
+                @NamedAttributeNode(value = "category"),
+                @NamedAttributeNode(value = "initiator")
+        })
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String annotation;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
     @With
@@ -31,7 +37,7 @@ public class Event {
     String description;
     @Column(name = "event_date")
     LocalDateTime eventDate;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "initiator_id")
     User initiator;
     @Embedded
