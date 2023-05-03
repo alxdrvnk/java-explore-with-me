@@ -65,6 +65,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public Event createEvent(Long userId, NewEventRequest eventRequest) {
+        validateEventDate(eventRequest.getEventDate());
         User user = userService.getUserById(userId);
         Category category = categoryService.getById(eventRequest.getCategoryId());
         return eventRepository.save(eventMapper.toEvent(user, category, eventRequest));
@@ -74,7 +75,6 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public Event updateEventById(Long userId, Long eventId, UpdateEventRequest updateRequest) {
         validateEventDate(updateRequest.getEventDate());
-
         userService.getUserById(userId);
         Event event = getEventById(eventId);
         if (userId != event.getInitiator().getId()) {
