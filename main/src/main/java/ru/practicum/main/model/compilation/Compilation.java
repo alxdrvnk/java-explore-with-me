@@ -14,16 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @With
-@NamedEntityGraph(
-        name = "compilation-events-graph",
-        attributeNodes = @NamedAttributeNode(value = "events", subgraph = "subgraph-event"),
-        subgraphs = {
-                @NamedSubgraph(name = "subgraph-event",
-                        attributeNodes = {
-                        @NamedAttributeNode(value = "initiator"),
-                        @NamedAttributeNode(value = "category")
-                })
-        })
 public class Compilation {
 
     @Id
@@ -32,5 +22,9 @@ public class Compilation {
     Boolean pinned;
     String title;
     @ManyToMany
+    @JoinTable(
+            name = "compilations_events",
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
     Set<Event> events;
 }

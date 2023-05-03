@@ -1,15 +1,15 @@
 package ru.practicum.main.model.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 
-@Value
 @Builder
+@Getter
+@With
 @Embeddable
 @AllArgsConstructor
+@NoArgsConstructor
 public class Location {
     Float lat;
     Float lon;
