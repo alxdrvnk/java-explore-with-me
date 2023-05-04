@@ -16,6 +16,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @With
     String name;
+
+    public Category withName(String name) {
+        return this.name.equals(name) ? this : new Category(this.id, name);
+    }
 }

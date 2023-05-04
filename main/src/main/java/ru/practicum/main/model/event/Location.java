@@ -6,7 +6,6 @@ import javax.persistence.Embeddable;
 
 @Builder
 @Getter
-@With
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
