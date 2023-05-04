@@ -58,7 +58,21 @@ public class EventServiceImpl implements EventService {
     public Event updateEventByAdmin(Long id, UpdateEventRequest updateRequest) {
         validateEventDate(updateRequest.getEventDate());
         Event event = getEventById(id);
-        Category category = categoryService.getById(updateRequest.getCategoryId());
+        if (event.getState() == EventState.PUBLISHED && updateRequest.getEventState() == EventState.PUBLISHED) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Event with id: %d is already published", event.getId()));
+
+        } else if (event.getState() == EventState.PUBLISHED && updateRequest.getEventState() == EventState.REJECTED) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Event with id: %d is already published", event.getId()));
+
+        } else if (event.getState() == EventState.REJECTED && updateRequest.getEventState() != null) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Event with id: %d is already canceled", event.getId()));
+        }
+        Category category = updateRequest.getCategoryId() == null ?
+                event.getCategory()
+                : categoryService.getById(updateRequest.getCategoryId());
         return eventRepository.save(eventMapper.partialEventUpdate(event, category, updateRequest));
     }
 
@@ -199,7 +213,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateEventDate(LocalDateTime eventDate) {
-        if (eventDate.isBefore(LocalDateTime.now(clock).plusHours(1))) {
+        if (eventDate != null && eventDate.isBefore(LocalDateTime.now(clock).plusHours(1))) {
             throw new EwmIllegalArgumentException("Start date must be least 1 hour before");
         }
     }

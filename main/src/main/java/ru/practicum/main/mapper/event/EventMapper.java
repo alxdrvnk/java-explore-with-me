@@ -39,7 +39,8 @@ public class EventMapper {
                 .location(this.toLocationDto(event.getLocation()))
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
-                .publishedOn(dateTimeConverter.formatDate(event.getPublishedDate()))
+                .publishedOn(event.getPublishedDate() == null ?
+                        null : event.getPublishedDate().toString())
                 .requestModeration(event.getModeration())
                 .state(event.getState().name())
                 .title(event.getTitle())
@@ -88,8 +89,10 @@ public class EventMapper {
                 .annotation(dto.getAnnotation())
                 .categoryId(dto.getCategory())
                 .description(dto.getDescription())
-                .eventDate(dateTimeConverter.parseDate(dto.getEventDate()))
-                .location(toLocation(dto.getLocation()))
+                .eventDate(dto.getEventDate() == null ?
+                        null : dateTimeConverter.parseDate(dto.getEventDate()))
+                .location(dto.getLocation() == null ?
+                        null : toLocation(dto.getLocation()))
                 .paid(dto.getPaid())
                 .participantLimit(dto.getParticipantLimit())
                 .requestModeration(dto.getRequestModeration())
@@ -102,25 +105,32 @@ public class EventMapper {
                 .annotation(dto.getAnnotation())
                 .categoryId(dto.getCategoryId())
                 .description(dto.getDescription())
-                .eventDate(dateTimeConverter.parseDate(dto.getEventDate()))
-                .location(toLocation(dto.getLocation()))
+                .eventDate(dto.getEventDate() == null ?
+                        null : dateTimeConverter.parseDate(dto.getEventDate()))
+                .location(dto.getLocation() == null ?
+                        null : toLocation(dto.getLocation()))
                 .paid(dto.getPaid())
                 .participantLimit(dto.getParticipantLimit())
-                .eventState(toEventState(dto.getStateAction()))
+                .eventState(dto.getStateAction() == null ?
+                        null : toEventState(dto.getStateAction()))
                 .title(dto.getTitle())
                 .build();
     }
 
     public UpdateEventRequest toUpdateEventRequest(UpdateEventAdminRequestDto updateRequest) {
+
         return UpdateEventRequest.builder()
                 .annotation(updateRequest.getAnnotation())
                 .categoryId(updateRequest.getCategoryId())
                 .description(updateRequest.getDescription())
-                .eventDate(dateTimeConverter.parseDate(updateRequest.getEventDate()))
-                .location(toLocation(updateRequest.getLocation()))
+                .eventDate(updateRequest.getEventDate() == null ?
+                        null : dateTimeConverter.parseDate(updateRequest.getEventDate()))
+                .location(updateRequest.getLocation() == null ?
+                        null : toLocation(updateRequest.getLocation()))
                 .paid(updateRequest.getPaid())
                 .participantLimit(updateRequest.getParticipantLimit())
-                .eventState(toEventState(updateRequest.getStateAction()))
+                .eventState(updateRequest.getStateAction() == null ?
+                        null : toEventState(updateRequest.getStateAction()))
                 .title(updateRequest.getTitle())
                 .build();
     }
@@ -135,6 +145,8 @@ public class EventMapper {
                 return EventState.PENDING;
             case CANCEL_REVIEW:
                 return EventState.CANCELED;
+            case REJECT_EVENT:
+                return EventState.REJECTED;
             default:
                 return null;
         }

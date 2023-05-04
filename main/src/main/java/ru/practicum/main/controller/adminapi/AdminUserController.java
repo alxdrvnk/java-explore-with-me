@@ -37,8 +37,9 @@ public class AdminUserController implements AdminUserApi {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public ResponseEntity<Object> deleteUser(Long id) {
         log.info("Admin delete request for User with id: {}", id);
         userService.deleteUserById(id);
+        return ResponseEntity.noContent().build();
     }
 }

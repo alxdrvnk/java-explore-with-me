@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.practicum.main.exception.EwmAlreadyExistsException;
+import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmInternalServerException;
 import ru.practicum.main.exception.EwmNotFoundException;
 
@@ -45,6 +46,17 @@ public class MainServiceHandler extends ResponseEntityExceptionHandler {
                 new EwmError(exception.getMessage()),
                 new HttpHeaders(),
                 HttpStatus.NOT_FOUND,
+                request);
+    }
+
+    @ExceptionHandler(value = EwmIllegalArgumentException.class)
+    protected ResponseEntity<Object> handlerNotFoundException(EwmIllegalArgumentException exception,
+                                                              WebRequest request) {
+        return handleExceptionInternal(
+                exception,
+                new EwmError(exception.getMessage()),
+                new HttpHeaders(),
+                HttpStatus.CONFLICT,
                 request);
     }
 }

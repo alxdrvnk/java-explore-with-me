@@ -54,3 +54,9 @@ CREATE TABLE IF NOT EXISTS participation_requests(
     FOREIGN KEY (requester_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT constr_unique_event_requester UNIQUE (event_id, requester_id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_category_name ON categories (name);
+CREATE INDEX IF NOT EXISTS idx_compilations_pinned ON compilations (pinned);
+CREATE INDEX IF NOT EXISTS idx_event_initiator ON events (initiator_id);
+CREATE INDEX IF NOT EXISTS idx_event_state ON events (state);
+CREATE INDEX IF NOT EXISTS idx_event_event_date ON events (event_date);

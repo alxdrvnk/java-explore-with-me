@@ -2,9 +2,7 @@ package ru.practicum.main.controller.adminapi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.main.dto.event.EventFullDto;
 import ru.practicum.main.dto.event.EventSearchFilter;
@@ -31,8 +29,8 @@ public class AdminEventController implements AdminEventApi {
     }
 
     @Override
-    public ResponseEntity<EventFullDto> updateEvent(Long id, UpdateEventAdminRequestDto updateRequest) {
-        log.info("Admin update Event with data: {}", updateRequest);
+    public ResponseEntity<EventFullDto> updateEvent(Long id, @Valid UpdateEventAdminRequestDto updateRequest) {
+        log.info("Admin update Event with id: {} with data: {}",id, updateRequest);
         return ResponseEntity.ok(
                 eventMapper.toEventFullDto(eventService.updateEventByAdmin(
                         id, eventMapper.toUpdateEventRequest(updateRequest))));
