@@ -6,7 +6,7 @@ import ru.practicum.main.dto.request.ParticipationRequestDto;
 
 import java.util.Collection;
 
-public interface PrivateRequestApi extends PrivateApi{
+public interface PrivateRequestApi extends PrivateApi {
 
     @GetMapping("/requests")
     ResponseEntity<Collection<ParticipationRequestDto>> getRequestsByUser(@PathVariable("userId") Long userId);

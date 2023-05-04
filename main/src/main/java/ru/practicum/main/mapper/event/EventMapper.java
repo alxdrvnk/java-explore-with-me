@@ -48,6 +48,7 @@ public class EventMapper {
                 .build();
 
     }
+
     public EventShortDto toEventShortDto(Event event)  {
         return EventShortDto.builder()
                 .id(event.getId())
@@ -61,10 +62,10 @@ public class EventMapper {
                 .views(event.getViews())
                 .build();
     }
+
     public Collection<EventShortDto> toEventShortDtoList(Collection<Event> events) {
         return events.stream().map(this::toEventShortDto).collect(Collectors.toList());
     }
-
 
     public Collection<EventFullDto> toEventFullDtoList(Collection<Event> events) {
         return events.stream().map(this::toEventFullDto).collect(Collectors.toList());
@@ -135,10 +136,8 @@ public class EventMapper {
                 .build();
     }
 
-
-
     EventState toEventState(StateAction stateAction) {
-        switch (stateAction){
+        switch (stateAction) {
             case PUBLISH_EVENT:
                 return EventState.PUBLISHED;
             case SEND_TO_REVIEW:

@@ -25,7 +25,7 @@ import java.util.List;
 @Slf4j(topic = "Participation Request Service")
 @Service
 @RequiredArgsConstructor
-public class ParticipationRequestServiceImpl implements ParticipationRequestService{
+public class ParticipationRequestServiceImpl implements ParticipationRequestService {
 
     private final RequestRepository requestRepository;
     private final UserService userService;
@@ -71,7 +71,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Override
     @Transactional
     public ParticipationRequest cancelRequest(Long userId, Long requestId) {
-        log.info("User with id: {} cancel Request with id:{}",userId, requestId);
+        log.info("User with id: {} cancel Request with id: {}",userId, requestId);
         userService.getUserById(userId);
         ParticipationRequest request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EwmNotFoundException(String.format("Participation Request with id: %d not found", userId)));

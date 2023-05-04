@@ -21,6 +21,7 @@ public class AdminEventController implements AdminEventApi {
 
     private final EventService eventService;
     private final EventMapper eventMapper;
+
     @Override
     public ResponseEntity<Collection<EventFullDto>> getAllEvents(@Valid EventSearchFilter eventSearchFilter) {
         log.info("Get events with filter: {}", eventSearchFilter);

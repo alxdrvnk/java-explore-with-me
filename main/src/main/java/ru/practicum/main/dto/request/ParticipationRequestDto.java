@@ -15,11 +15,11 @@ public class ParticipationRequestDto {
     String status;
 
     @JsonCreator
-    public ParticipationRequestDto (@JsonProperty(value = "id") Long id,
-                                    @JsonProperty(value = "event") Long event,
-                                    @JsonProperty(value = "requester") Long requester,
-                                    @JsonProperty(value = "created") String created,
-                                    @JsonProperty(value = "status") String status) {
+    public ParticipationRequestDto(@JsonProperty(value = "id") Long id,
+                                   @JsonProperty(value = "event") Long event,
+                                   @JsonProperty(value = "requester") Long requester,
+                                   @JsonProperty(value = "created") String created,
+                                   @JsonProperty(value = "status") String status) {
         this.id = id;
         this.event = event;
         this.requester = requester;
