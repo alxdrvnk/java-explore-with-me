@@ -150,12 +150,12 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequest> updatedRequests = new ArrayList<>();
         if (event.getModeration().equals(Boolean.TRUE) || event.getParticipantLimit() != 0) {
             for (ParticipationRequest er : eventRequests) {
-                log.info("LIMIT {}", event.getParticipantLimit());
                 checkRequestStatus(er);
-
-                if ((confirmsCount != event.getParticipantLimit() || event.getParticipantLimit() == 0)
-                        && request.getStatus().equals(RequestStatus.CONFIRMED)) {
-
+                if (request.getStatus().equals(RequestStatus.CONFIRMED)) {
+                    if (event.getConfirmedRequests() == event.getParticipantLimit()) {
+                        throw new EwmIllegalArgumentException(
+                                String.format("Event with id: %d reached the limit", event.getId()));
+                    }
                     er = er.withStatus(RequestStatus.CONFIRMED);
                     confirmedRequests.add(er);
                     confirmsCount += 1;
@@ -167,7 +167,6 @@ public class EventServiceImpl implements EventService {
             }
         }
         event = event.withConfirmedRequests(confirmsCount);
-        log.info("REQUESTS {} {}", updatedRequests.size(), confirmedRequests.size());
         requestRepository.saveAll(updatedRequests);
         eventRepository.save(event);
         return EventRequestStatusUpdateResult.builder()

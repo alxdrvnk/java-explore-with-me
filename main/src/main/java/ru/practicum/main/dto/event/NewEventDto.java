@@ -36,7 +36,7 @@ public class NewEventDto {
                        @JsonProperty(value = "eventDate") String eventDate,
                        @JsonProperty(value = "location") LocationDto location,
                        @JsonProperty(value = "paid") Boolean paid,
-                       @JsonProperty(value = "participationLimit") Integer participantLimit,
+                       @JsonProperty(value = "participantLimit") Integer participantLimit,
                        @JsonProperty(value = "requestModeration") Boolean requestModeration,
                        @JsonProperty(value = "title") String title) {
         this.annotation = annotation;
