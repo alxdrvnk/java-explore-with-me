@@ -5,6 +5,7 @@ import ru.practicum.main.model.event.*;
 import ru.practicum.main.model.request.ParticipationRequest;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface EventService {
     Collection<Event> getAllEvents(EventSearchFilter eventSearchFilter);
@@ -32,4 +33,6 @@ public interface EventService {
     void decreaseConfirmRequests(Event event);
 
     void increaseConfirmedRequests(Event event);
+
+    List<Event> getAllEventsByIds(Collection<Long> eventsId);
 }

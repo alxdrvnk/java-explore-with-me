@@ -7,10 +7,15 @@ import org.springframework.stereotype.Service;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.mapper.compilation.CompilationMapper;
 import ru.practicum.main.model.compilation.Compilation;
+import ru.practicum.main.model.compilation.NewCompilation;
+import ru.practicum.main.model.event.Event;
 import ru.practicum.main.repository.CompilationRepository;
+import ru.practicum.main.service.event.EventService;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 @Slf4j(topic = "Compilation Service")
 @Service
@@ -18,13 +23,19 @@ import java.util.Collection;
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
+    private final EventService eventService;
     private final CompilationMapper compilationMapper;
 
     @Override
     @Transactional
-    public Compilation createCompilation(Compilation compilation) {
+    public Compilation createCompilation(NewCompilation compilation) {
         log.info("Create new Compilation: {}", compilation);
-        return compilationRepository.save(compilation);
+        List<Event> events = eventService.getAllEventsByIds(compilation.getEvents());
+        return compilationRepository.save(
+                new Compilation(null,
+                        compilation.getPinned(),
+                        compilation.getTitle(),
+                        new HashSet<>(events)));
     }
 
     @Override

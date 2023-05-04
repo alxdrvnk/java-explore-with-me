@@ -7,6 +7,7 @@ import ru.practicum.main.dto.compilation.NewCompilationDto;
 import ru.practicum.main.dto.compilation.UpdateCompilationRequestDto;
 import ru.practicum.main.mapper.event.EventMapper;
 import ru.practicum.main.model.compilation.Compilation;
+import ru.practicum.main.model.compilation.NewCompilation;
 import ru.practicum.main.model.event.Event;
 
 import java.util.Collection;
@@ -19,8 +20,9 @@ public class CompilationMapper {
 
     private final EventMapper eventMapper;
 
-    public Compilation toCompilation(NewCompilationDto compilationDto) {
-        return Compilation.builder()
+    public NewCompilation toNewCompilation(NewCompilationDto compilationDto) {
+        return NewCompilation.builder()
+                .events(compilationDto.getEvents())
                 .pinned(compilationDto.getPinned())
                 .title(compilationDto.getTitle())
                 .build();

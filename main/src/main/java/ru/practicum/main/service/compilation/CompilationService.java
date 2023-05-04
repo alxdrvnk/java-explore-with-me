@@ -1,12 +1,13 @@
 package ru.practicum.main.service.compilation;
 
 import ru.practicum.main.model.compilation.Compilation;
+import ru.practicum.main.model.compilation.NewCompilation;
 
 import java.util.Collection;
 
 public interface CompilationService {
 
-    Compilation createCompilation(Compilation compilation);
+    Compilation createCompilation(NewCompilation compilation);
 
     Compilation updateCompilation(Long id, Compilation update);
 

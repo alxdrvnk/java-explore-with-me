@@ -23,7 +23,8 @@ public class AdminCompilationController implements AdminCompilationApi {
     @Override
     public ResponseEntity<CompilationDto> createCompilation(NewCompilationDto compilationDto) {
         log.info("Admin request for create Compilation with data: {}", compilationDto);
-        Compilation compilation = compilationService.createCompilation(compilationMapper.toCompilation(compilationDto));
+        Compilation compilation = compilationService.createCompilation(
+                compilationMapper.toNewCompilation(compilationDto));
         return new ResponseEntity<>(compilationMapper.toCompilationDto(compilation), HttpStatus.CREATED);
 
     }
