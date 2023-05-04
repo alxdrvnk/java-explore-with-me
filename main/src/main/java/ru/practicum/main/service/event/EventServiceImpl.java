@@ -148,19 +148,15 @@ public class EventServiceImpl implements EventService {
         Collection<ParticipationRequest> eventRequests = requestRepository.findAllById(request.getRequestIds());
         Set<ParticipationRequest> confirmedRequests = new HashSet<>();
         Set<ParticipationRequest> rejectedRequests = new HashSet<>();
+        List<ParticipationRequest> updatedRequests = new ArrayList<>();
         if (event.getModeration().equals(Boolean.TRUE) || event.getParticipantLimit() != 0) {
             for (ParticipationRequest er : eventRequests) {
-                if (!er.getStatus().equals(RequestStatus.PENDING)) {
-                    throw new EwmIllegalArgumentException(
-                            String.format("Request with id: %d must be in \"PENDING\" status", er.getId()));
-                }
-                if (!er.getStatus().equals(RequestStatus.CONFIRMED)
-                        && request.getStatus().equals(RequestStatus.REJECTED)) {
-                    throw new EwmIllegalArgumentException(
-                            String.format("Request with id: %d already confirmed", er.getId()));
-                }
+
+                checkRequestStatus(er);
+
                 if (confirmsCount != event.getParticipantLimit()
                         && request.getStatus().equals(RequestStatus.CONFIRMED)) {
+
                     er = er.withStatus(RequestStatus.CONFIRMED);
                     confirmedRequests.add(er);
                     confirmsCount += 1;
@@ -168,11 +164,12 @@ public class EventServiceImpl implements EventService {
                     er = er.withStatus(RequestStatus.REJECTED);
                     rejectedRequests.add(er);
                 }
+                updatedRequests.add(er);
             }
         }
         event = event.withConfirmedRequests(confirmsCount);
-
-        requestRepository.saveAll(eventRequests);
+        log.info("REQUESTS {} {}", updatedRequests.size(), confirmedRequests.size());
+        requestRepository.saveAll(updatedRequests);
         eventRepository.save(event);
         return EventRequestStatusUpdateResult.builder()
                 .confirmedRequests(confirmedRequests)
@@ -222,6 +219,18 @@ public class EventServiceImpl implements EventService {
     private void validateEventDate(LocalDateTime eventDate) {
         if (eventDate != null && eventDate.isBefore(LocalDateTime.now(clock).plusHours(1))) {
             throw new EwmIllegalArgumentException("Start date must be least 1 hour before");
+        }
+    }
+
+    private void checkRequestStatus(ParticipationRequest request) {
+        if (!request.getStatus().equals(RequestStatus.PENDING)) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Request with id: %d must be in \"PENDING\" status", request.getId()));
+        }
+        if (!request.getStatus().equals(RequestStatus.CONFIRMED)
+                && request.getStatus().equals(RequestStatus.REJECTED)) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Request with id: %d already confirmed", request.getId()));
         }
     }
 

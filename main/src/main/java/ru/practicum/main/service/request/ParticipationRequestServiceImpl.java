@@ -45,6 +45,11 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         log.info("User with id: {} create Request on event with id: {}", userId, eventId);
         User user = userService.getUserById(userId);
         Event event = eventService.getEventById(eventId);
+        if (event.getParticipantLimit() == event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
+            throw new EwmAlreadyExistsException(
+                    String.format("Event with id: %d reached the participation limit",
+                            event.getId()));
+        }
         if (requestRepository.existsByRequesterAndEvent(user, event)) {
             throw new EwmAlreadyExistsException(
                     String.format("User with id: %d is already send request to event with id: %d",
