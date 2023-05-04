@@ -23,6 +23,7 @@ public class AdminEventController implements AdminEventApi {
     private final EventMapper eventMapper;
     @Override
     public ResponseEntity<Collection<EventFullDto>> getAllEvents(@Valid EventSearchFilter eventSearchFilter) {
+        log.info("Get events with filter: {}", eventSearchFilter);
         Collection<Event> events = eventService.getAllEvents(eventSearchFilter);
         return ResponseEntity.ok(
                 eventMapper.toEventFullDtoList(events));

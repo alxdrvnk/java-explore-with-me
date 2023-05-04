@@ -47,10 +47,15 @@ public class EventSpecification implements Specification<Event> {
         }
         if (filter.getRangeStart() != null && filter.getRangeEnd() != null) {
             predicates.add(
-                    criteriaBuilder.between(root.get("eventDate"), converter.parseDate(filter.getRangeStart()), converter.parseDate(filter.getRangeEnd())));
+                    criteriaBuilder.between(
+                            root.get("eventDate"),
+                            converter.parseDate(filter.getRangeStart()),
+                            converter.parseDate(filter.getRangeEnd())));
         } else if (filter.getRangeStart() != null) {
             predicates.add(
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("eventDate"), converter.parseDate(filter.getRangeStart())));
+                    criteriaBuilder.greaterThanOrEqualTo(
+                            root.get("eventDate"),
+                            converter.parseDate(filter.getRangeStart())));
         } else if (filter.getRangeEnd() != null) {
             predicates.add(
                     criteriaBuilder.between(

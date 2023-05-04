@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.exception.EwmAlreadyExistsException;
+import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmInternalServerException;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.model.category.Category;
@@ -63,10 +64,16 @@ public class CategoryServiceImpl implements CategoryService {
     //Необходимо выбрасывать ошибку
     @Override
     public void deleteCategory(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new EwmNotFoundException(String.format("Category with Id %d not found", id));
+        try {
+            if (!categoryRepository.existsById(id)) {
+                throw new EwmNotFoundException(String.format("Category with Id %d not found", id));
+            }
+            categoryRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Catgory with id: %d not empty", id));
         }
-        categoryRepository.deleteById(id);
+
     }
 
     @Override

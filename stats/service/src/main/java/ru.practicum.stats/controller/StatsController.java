@@ -31,7 +31,7 @@ public class StatsController {
                                        @RequestParam String end,
                                        @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") Boolean unique) {
-
+        log.info("Get stats with values: start = {} end = {} uris = {} unique = {}", start, end, uris, unique);
         return statsMapper.toListViewStatsDto(
                 statsService.getStats(
                         dateTimeConverter.parseDate(start),

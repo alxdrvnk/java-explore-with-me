@@ -41,13 +41,15 @@ public class EventServiceImpl implements EventService {
     private final UserService userService;
     private final RequestRepository requestRepository;
     private final Clock clock;
+    private final DateTimeConverter converter;
 
     @Value("${app.name}")
     private String appName;
+
     @Override
     public Collection<Event> getAllEvents(EventSearchFilter eventSearchFilter) {
         EventSpecification spec = new EventSpecification(eventSearchFilter,
-                new DateTimeConverter(), new ClockConfig().clock());
+                converter, clock);
         PageRequest pageRequest = PageRequest.of(eventSearchFilter.getFrom() / eventSearchFilter.getSize(),
                 eventSearchFilter.getSize());
         return eventRepository.findAll(spec, pageRequest).getContent();
@@ -91,7 +93,7 @@ public class EventServiceImpl implements EventService {
         validateEventDate(updateRequest.getEventDate());
         userService.getUserById(userId);
         Event event = getEventById(eventId);
-        if (userId != event.getInitiator().getId()) {
+        if (!userId.equals(event.getInitiator().getId())) {
             throw new EwmIllegalArgumentException(
                     String.format("User with id: %d not initiator of Event with id: %d", userId, eventId));
         }
@@ -127,12 +129,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Collection<ParticipationRequest> getEventRequests(Long userId, Long eventId) {
-        User user = userService.getUserById(userId);
+        userService.getUserById(userId);
         Event event = getEventById(eventId);
-        if (event.getInitiator().getId() != userId) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new EwmIllegalArgumentException(String.format("User with id: %d not initiator", userId));
         }
-        return requestRepository.findByRequester(user);
+        return requestRepository.findAllByEvent(event);
     }
 
     @Override
@@ -151,6 +153,11 @@ public class EventServiceImpl implements EventService {
                 if (!er.getStatus().equals(RequestStatus.PENDING)) {
                     throw new EwmIllegalArgumentException(
                             String.format("Request with id: %d must be in \"PENDING\" status", er.getId()));
+                }
+                if (!er.getStatus().equals(RequestStatus.CONFIRMED)
+                        && request.getStatus().equals(RequestStatus.REJECTED)) {
+                    throw new EwmIllegalArgumentException(
+                            String.format("Request with id: %d already confirmed", er.getId()));
                 }
                 if (confirmsCount != event.getParticipantLimit()
                         && request.getStatus().equals(RequestStatus.CONFIRMED)) {
@@ -177,7 +184,7 @@ public class EventServiceImpl implements EventService {
         statsClient.saveRequest(appName, uri, ip, LocalDateTime.now(clock));
         PageRequest pageRequest = PageRequest.of(filter.getFrom() / filter.getSize(), filter.getSize());
         EventSpecification spec = new EventSpecification(filter,
-                new DateTimeConverter(), new ClockConfig().clock());
+                converter, clock);
 
         List<Event> eventList = eventRepository.findAll(spec, pageRequest).getContent();
 
@@ -197,7 +204,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void decreaseConfirmRequests(Event event) {
-        log.info("Decrease count of Confirmed requests for Event with id: {}",event.getId());
+        log.info("Decrease count of Confirmed requests for Event with id: {}", event.getId());
         if (event.getConfirmedRequests() > 0) {
             eventRepository.save(event.withConfirmedRequests(event.getConfirmedRequests() - 1));
         }
@@ -220,14 +227,15 @@ public class EventServiceImpl implements EventService {
 
     private Collection<Event> getViewsStat(List<Event> eventList, String uri) {
         List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
-        LocalDateTime start = LocalDateTime.MIN; //Возможно стоит вынести в отдельную переменную
+        LocalDateTime start = LocalDateTime.of(1000, 1, 1, 12, 0, 0); //Возможно стоит вынести в отдельную переменную
         List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(clock), uris, false);
-
-        Map<String, Long> mappedStatsByUri = stats.stream()
-                .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
-
-        return eventList.stream()
-                .map(event -> event.withViews(
-                        mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
+        if (!stats.isEmpty()) {
+            Map<String, Long> mappedStatsByUri = stats.stream()
+                    .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
+            eventList = eventList.stream()
+                    .map(event -> event.withViews(
+                            mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
+        }
+        return eventList;
     }
 }

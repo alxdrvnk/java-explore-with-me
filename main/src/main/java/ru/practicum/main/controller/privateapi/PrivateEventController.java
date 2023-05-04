@@ -14,6 +14,7 @@ import ru.practicum.main.model.event.EventRequestStatusUpdateResult;
 import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.service.event.EventService;
 
+import javax.validation.Valid;
 import java.util.Collection;
 
 @Slf4j(topic = "Private Event Controller")
@@ -26,7 +27,7 @@ public class PrivateEventController implements PrivateEventApi {
     private final RequestMapper requestMapper;
 
     @Override
-    public ResponseEntity<EventFullDto> createEvent(Long userId, NewEventDto dto) {
+    public ResponseEntity<EventFullDto> createEvent(Long userId, @Valid NewEventDto dto) {
         log.info("User with id: {} create Event with data: {}", userId, dto);
         Event event = eventService.createEvent(userId, eventMapper.toNewEventRequest(dto));
         return new ResponseEntity<>(eventMapper.toEventFullDto(event), HttpStatus.CREATED);

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import ru.practicum.main.exception.EwmAlreadyExistsException;
 import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.model.event.Event;
@@ -42,9 +43,13 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Transactional
     public ParticipationRequest createRequest(Long userId, Long eventId) {
         log.info("User with id: {} create Request on event with id: {}", userId, eventId);
-
         User user = userService.getUserById(userId);
         Event event = eventService.getEventById(eventId);
+        if (requestRepository.existsByRequesterAndEvent(user, event)) {
+            throw new EwmAlreadyExistsException(
+                    String.format("User with id: %d is already send request to event with id: %d",
+                            user.getId(), event.getId()));
+        }
         validateEvent(event, user);
         ParticipationRequest request = ParticipationRequest.builder()
                 .event(event)
@@ -66,7 +71,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         ParticipationRequest request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EwmNotFoundException(String.format("Participation Request with id: %d not found", userId)));
 
-        if (request.getRequester().getId() != userId){
+        if (!request.getRequester().getId().equals(userId)){
             throw new EwmIllegalArgumentException(String.format("User with id: %d doesn't create Request with id: %d",
                     userId, requestId));
         }
@@ -92,7 +97,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
 
     private void validateEvent(Event event, User user) {
 
-        if (event.getInitiator().getId() == user.getId()) {
+        if (event.getInitiator().getId().equals(user.getId())) {
             throw new EwmIllegalArgumentException(String.format("User with id: %d is initiator", user.getId()));
         }
 
