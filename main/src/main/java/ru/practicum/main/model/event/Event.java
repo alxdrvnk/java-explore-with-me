@@ -82,6 +82,7 @@ public class Event {
                         this.initiator, this.location, this.paid, this.participantLimit,
                         this.publishedDate, this.moderation, this.state, this.title, this.views);
     }
+
     public Event withAnnotation(String annotation) {
         return this.annotation.equals(annotation) ?
                 this :
