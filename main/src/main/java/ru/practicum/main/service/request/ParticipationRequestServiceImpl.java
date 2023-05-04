@@ -76,7 +76,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         ParticipationRequest request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EwmNotFoundException(String.format("Participation Request with id: %d not found", userId)));
 
-        if (!request.getRequester().getId().equals(userId)){
+        if (!request.getRequester().getId().equals(userId)) {
             throw new EwmIllegalArgumentException(String.format("User with id: %d doesn't create Request with id: %d",
                     userId, requestId));
         }
