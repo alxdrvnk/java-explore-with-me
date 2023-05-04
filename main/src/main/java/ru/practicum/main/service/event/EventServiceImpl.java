@@ -150,10 +150,10 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequest> updatedRequests = new ArrayList<>();
         if (event.getModeration().equals(Boolean.TRUE) || event.getParticipantLimit() != 0) {
             for (ParticipationRequest er : eventRequests) {
-
+                log.info("LIMIT {}", event.getParticipantLimit());
                 checkRequestStatus(er);
 
-                if (confirmsCount != event.getParticipantLimit()
+                if ((confirmsCount != event.getParticipantLimit() || event.getParticipantLimit() == 0)
                         && request.getStatus().equals(RequestStatus.CONFIRMED)) {
 
                     er = er.withStatus(RequestStatus.CONFIRMED);
