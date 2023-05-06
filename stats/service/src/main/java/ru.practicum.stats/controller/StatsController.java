@@ -25,6 +25,7 @@ public class StatsController {
     @PostMapping("/hit")
     public ResponseEntity<Object> create(@RequestBody EndpointHitDto dto) {
         log.info("Add EndpointHit with data: " + dto);
+        statsService.create(statsMapper.toEndpointHit(dto));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
