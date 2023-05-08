@@ -219,6 +219,11 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAllById(eventsId);
     }
 
+    @Override
+    public List<Event> getAllEventsWithPendingState() {
+        return eventRepository.findAllByState(EventState.PENDING);
+    }
+
     private void validateEventDate(LocalDateTime eventDate) {
         if (eventDate != null && eventDate.isBefore(LocalDateTime.now(clock).plusHours(1))) {
             throw new EwmIllegalArgumentException("Start date must be least 1 hour before");

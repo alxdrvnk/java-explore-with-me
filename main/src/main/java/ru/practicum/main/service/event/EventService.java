@@ -35,4 +35,7 @@ public interface EventService {
     void increaseConfirmedRequests(Event event);
 
     List<Event> getAllEventsByIds(Collection<Long> eventsId);
+
+    List<Event> getAllEventsWithPendingState();
+
 }
