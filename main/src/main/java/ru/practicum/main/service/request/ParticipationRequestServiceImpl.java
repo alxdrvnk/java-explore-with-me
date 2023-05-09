@@ -46,7 +46,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         User user = userService.getUserById(userId);
         Event event = eventService.getEventById(eventId);
         if (event.getParticipantLimit() == event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
-            throw new EwmAlreadyExistsException(
+            throw new EwmIllegalArgumentException(
                     String.format("Event with id: %d reached the participation limit",
                             event.getId()));
         }
