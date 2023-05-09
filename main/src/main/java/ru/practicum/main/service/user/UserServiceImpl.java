@@ -2,11 +2,11 @@ package ru.practicum.main.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.NonUniqueObjectException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.exception.EwmAlreadyExistsException;
-import ru.practicum.main.exception.EwmInternalServerException;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.model.user.User;
 import ru.practicum.main.repository.UserRepository;
@@ -23,31 +23,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    //TODO: Возможно стоит передалать метод
     public User createUser(User user) {
         log.info("Create new User: {}", user);
-        Optional<User> createdUser;
-
-        try {
-            createdUser = userRepository.findByEmail(user.getEmail());
-        } catch (Exception e) {
-            log.error("Failed to create User: {}", user, e);
-            throw new EwmInternalServerException(String.format(
-                    "Failed to create user %s", user.getEmail()),e);
-        }
-
-        if (createdUser.isPresent()) {
-            log.info("User {} already exists", user);
-            throw new EwmAlreadyExistsException(String.format(
-                    "User with Email %s already exists", user.getEmail()));
-        }
-
         try {
             return userRepository.save(user);
-        } catch (Exception e) {
-            log.error("Failed to create user {}", user, e);
-            throw new EwmInternalServerException(String.format(
-                    "Failed to create user %s", user.getEmail()), e);
+        } catch (NonUniqueObjectException e) {
+            throw new EwmAlreadyExistsException(String.format(
+                    "User with email %s already exists", user.getEmail()));
         }
     }
 
