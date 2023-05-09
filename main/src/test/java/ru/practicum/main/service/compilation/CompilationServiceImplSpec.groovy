@@ -3,6 +3,7 @@ package ru.practicum.main.service.compilation
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.mapper.compilation.CompilationMapper
 import ru.practicum.main.repository.CompilationRepository
+import ru.practicum.main.service.event.EventService
 import spock.lang.Specification
 
 class CompilationServiceImplSpec extends Specification {
@@ -13,7 +14,7 @@ class CompilationServiceImplSpec extends Specification {
             existsById(1L) >> Optional.empty()
         }
 
-        def service = new CompilationServiceImpl(repository, new CompilationMapper())
+        def service = new CompilationServiceImpl(repository, Mock(EventService), Mock(CompilationMapper))
 
         when:
         service.deleteCompilation(1L)

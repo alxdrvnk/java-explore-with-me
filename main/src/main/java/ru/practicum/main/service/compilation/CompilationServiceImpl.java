@@ -14,6 +14,7 @@ import ru.practicum.main.service.event.EventService;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -31,11 +32,15 @@ public class CompilationServiceImpl implements CompilationService {
     public Compilation createCompilation(NewCompilation compilation) {
         log.info("Create new Compilation: {}", compilation);
         List<Event> events = eventService.getAllEventsByIds(compilation.getEvents());
+        if (events == null) {
+            events = Collections.emptyList();
+        }
         return compilationRepository.save(
                 new Compilation(null,
                         compilation.getPinned(),
                         compilation.getTitle(),
                         new HashSet<>(events)));
+
     }
 
     @Override
