@@ -12,7 +12,6 @@ import ru.practicum.main.model.user.User;
 import ru.practicum.main.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j(topic = "User Service")
 @Service
