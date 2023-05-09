@@ -2,7 +2,6 @@ package ru.practicum.main.repository.specification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
-import ru.practicum.main.converter.DateTimeConverter;
 import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.model.event.Event;
 import ru.practicum.main.model.event.EventState;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 public class EventSpecification implements Specification<Event> {
 
     private final EventSearchFilter filter;
-    private final DateTimeConverter converter;
     private final Clock clock;
 
 
@@ -49,18 +47,18 @@ public class EventSpecification implements Specification<Event> {
             predicates.add(
                     criteriaBuilder.between(
                             root.get("eventDate"),
-                            converter.parseDate(filter.getRangeStart()),
-                            converter.parseDate(filter.getRangeEnd())));
+                            filter.getRangeStart(),
+                            filter.getRangeEnd()));
         } else if (filter.getRangeStart() != null) {
             predicates.add(
                     criteriaBuilder.greaterThanOrEqualTo(
                             root.get("eventDate"),
-                            converter.parseDate(filter.getRangeStart())));
+                            filter.getRangeStart()));
         } else if (filter.getRangeEnd() != null) {
             predicates.add(
                     criteriaBuilder.between(
                             root.get("eventDate"), LocalDateTime.now(clock),
-                            converter.parseDate(filter.getRangeEnd())));
+                            filter.getRangeEnd()));
         } else {
             predicates.add(
                     criteriaBuilder.greaterThanOrEqualTo(

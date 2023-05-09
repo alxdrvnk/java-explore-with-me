@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import ru.practicum.main.converter.DateTimeConverter;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Value
@@ -20,10 +20,10 @@ public class EventSearchFilter {
     Long[] users;
     String[] states;
     Long[] categories;
-    @Pattern(regexp = DateTimeConverter.DateTimeRegEx)
-    String rangeStart;
-    @Pattern(regexp = DateTimeConverter.DateTimeRegEx)
-    String rangeEnd;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime rangeStart;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime rangeEnd;
     Boolean paid;
     String sort;
     Boolean onlyAvailable;
@@ -37,8 +37,10 @@ public class EventSearchFilter {
                              @JsonProperty(value = "users") Long[] users,
                              @JsonProperty(value = "states") String[] states,
                              @JsonProperty(value = "categories") Long[] categories,
-                             @JsonProperty(value = "rangeStart") String rangeStart,
-                             @JsonProperty(value = "rangeEnd") String rangeEnd,
+                             @JsonProperty(value = "rangeStart")
+                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                             @JsonProperty(value = "rangeEnd")
+                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                              @JsonProperty(value = "paid") Boolean paid,
                              @JsonProperty(value = "sort") String sort,
                              @JsonProperty(value = "onlyAvailable") Boolean onlyAvailable,

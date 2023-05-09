@@ -23,7 +23,6 @@ public class EventMapper {
 
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
-    private final DateTimeConverter dateTimeConverter;
     private final Clock clock;
 
     public EventFullDto toEventFullDto(Event event) {
@@ -32,9 +31,9 @@ public class EventMapper {
                 .annotation(event.getAnnotation())
                 .category(categoryMapper.toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
-                .createdOn(dateTimeConverter.formatDate(event.getCreatedDate()))
+                .createdOn(DateTimeConverter.formatDate(event.getCreatedDate()))
                 .description(event.getDescription())
-                .eventDate(dateTimeConverter.formatDate(event.getEventDate()))
+                .eventDate(DateTimeConverter.formatDate(event.getEventDate()))
                 .initiator(userMapper.toUserShortDto(event.getInitiator()))
                 .location(this.toLocationDto(event.getLocation()))
                 .paid(event.getPaid())
@@ -55,7 +54,7 @@ public class EventMapper {
                 .annotation(event.getAnnotation())
                 .category(categoryMapper.toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
-                .eventDate(dateTimeConverter.formatDate(event.getEventDate()))
+                .eventDate(DateTimeConverter.formatDate(event.getEventDate()))
                 .initiator(userMapper.toUserShortDto(event.getInitiator()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
@@ -91,10 +90,10 @@ public class EventMapper {
                 .categoryId(dto.getCategory())
                 .description(dto.getDescription())
                 .eventDate(dto.getEventDate() == null ?
-                        null : dateTimeConverter.parseDate(dto.getEventDate()))
+                        null : dto.getEventDate())
                 .location(dto.getLocation() == null ?
                         null : toLocation(dto.getLocation()))
-                .paid(dto.getPaid())
+                .paid(dto.isPaid())
                 .participantLimit(dto.getParticipantLimit())
                 .requestModeration(dto.getRequestModeration())
                 .title(dto.getTitle())
@@ -107,7 +106,7 @@ public class EventMapper {
                 .categoryId(dto.getCategoryId())
                 .description(dto.getDescription())
                 .eventDate(dto.getEventDate() == null ?
-                        null : dateTimeConverter.parseDate(dto.getEventDate()))
+                        null : dto.getEventDate())
                 .location(dto.getLocation() == null ?
                         null : toLocation(dto.getLocation()))
                 .paid(dto.getPaid())
@@ -125,7 +124,7 @@ public class EventMapper {
                 .categoryId(updateRequest.getCategoryId())
                 .description(updateRequest.getDescription())
                 .eventDate(updateRequest.getEventDate() == null ?
-                        null : dateTimeConverter.parseDate(updateRequest.getEventDate()))
+                        null : updateRequest.getEventDate())
                 .location(updateRequest.getLocation() == null ?
                         null : toLocation(updateRequest.getLocation()))
                 .paid(updateRequest.getPaid())
@@ -160,10 +159,10 @@ public class EventMapper {
 
     public Event partialEventUpdate(Event event, UpdateEventRequest updateRequest) {
         Event updatedEvent = event;
-        if (updateRequest.getAnnotation() != null) {
+        if (updateRequest.getAnnotation() != null && !updateRequest.getAnnotation().isBlank()) {
             updatedEvent = updatedEvent.withAnnotation(updateRequest.getAnnotation());
         }
-        if (updateRequest.getDescription() != null) {
+        if (updateRequest.getDescription() != null && !updateRequest.getDescription().isBlank()) {
             updatedEvent = updatedEvent.withDescription(updateRequest.getDescription());
         }
         if (updateRequest.getEventDate() != null) {
@@ -187,7 +186,7 @@ public class EventMapper {
             }
             updatedEvent = updatedEvent.withState(updateRequest.getEventState());
         }
-        if (updateRequest.getTitle() != null) {
+        if (updateRequest.getTitle() != null && !updateRequest.getTitle().isBlank()) {
             updatedEvent = updatedEvent.withTitle(updateRequest.getTitle());
         }
         return updatedEvent;

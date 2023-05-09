@@ -30,7 +30,7 @@ public class Event {
     @JoinColumn(name = "category_id")
     Category category;
     @With
-    @Column(name = "confirmed_requests")
+    @Transient
     int confirmedRequests;
     @With
     @Column(name = "created_date")
@@ -90,5 +90,39 @@ public class Event {
                         this.confirmedRequests, this.createdDate, this.description, this.eventDate,
                         this.initiator, this.location, this.paid, this.participantLimit,
                         this.publishedDate, this.moderation, this.state, this.title, this.views);
+    }
+
+
+    public Event(
+            Long id,
+            String annotation,
+            Category category,
+            long confirmedRequests,
+            LocalDateTime createdDate,
+            String description,
+            LocalDateTime eventDate,
+            User initiator,
+            Location location,
+            Boolean paid,
+            int participantLimit,
+            LocalDateTime publishedDate,
+            Boolean moderation,
+            EventState state,
+            String title) {
+        this.id = id;
+        this.annotation = annotation;
+        this.category = category;
+        this.confirmedRequests = (int)confirmedRequests;
+        this.createdDate = createdDate;
+        this.description = description;
+        this.eventDate = eventDate;
+        this.initiator = initiator;
+        this.location = location;
+        this.paid = paid;
+        this.participantLimit = participantLimit;
+        this.publishedDate = publishedDate;
+        this.moderation = moderation;
+        this.state = state;
+        this.title = title;
     }
 }
