@@ -27,7 +27,7 @@ public class UpdateEventUserRequestDto {
     LocalDateTime eventDate;
     LocationDto location;
     Boolean paid;
-    int participantLimit;
+    Integer participantLimit;
     Boolean requestModeration;
     StateAction stateAction;
     @Size(min = 3, max = 120)
