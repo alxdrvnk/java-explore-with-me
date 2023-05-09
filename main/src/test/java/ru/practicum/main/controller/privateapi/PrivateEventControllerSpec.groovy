@@ -139,7 +139,7 @@ class PrivateEventControllerSpec extends Specification {
                 .andExpect(status().isOk())
         then:
         interaction {
-            1 * service.updateEventById(1L, 1L, event) >> {
+            1 * service.updateEventById(1L, 1L, _ as UpdateEventRequest) >> {
                 Event.builder()
                         .category(Category.builder().id(3).name("Name").build())
                         .location(Location.builder().lat(0).lon(0).build())
