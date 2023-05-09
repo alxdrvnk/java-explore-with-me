@@ -1,9 +1,9 @@
 package ru.practicum.main.controller.privateapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonBuilder
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import ru.practicum.main.converter.DateTimeConverter
 import ru.practicum.main.dto.event.*
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
@@ -66,7 +66,7 @@ class PrivateEventControllerSpec extends Specification {
     def "Should return 201 when create new event"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), new DateTimeConverter(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
         def controller = new PrivateEventController(service, eventMapper, Mock(RequestMapper))
         def server = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -78,8 +78,8 @@ class PrivateEventControllerSpec extends Specification {
                 .annotation("a" * 20)
                 .category(1L)
                 .description("a" * 25)
-                .eventDate("2000-01-01 12:00:00")
-                .location(LocationDto.builder().build())
+                .eventDate(LocalDateTime.of(2000, 1, 1, 12, 0, 0))
+                .location(LocationDto.builder().lat(0).lon(0).build())
                 .paid(true)
                 .participantLimit(0)
                 .requestModeration(true)
@@ -88,7 +88,7 @@ class PrivateEventControllerSpec extends Specification {
         when:
         def request = post("/users/1/events")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(new JsonBuilder(event).toString())
+                .content(new ObjectMapper().writeValueAsString(event))
         and:
         server.perform(request)
                 .andExpect(status().isCreated())
@@ -97,7 +97,7 @@ class PrivateEventControllerSpec extends Specification {
             1 * service.createEvent(1L, _ as NewEventRequest) >> {
                 Event.builder()
                         .category(Category.builder().build())
-                        .location(Location.builder().build())
+                        .location(Location.builder().lon(0).lat(0).build())
                         .eventDate(LocalDateTime.now())
                         .createdDate(LocalDateTime.now())
                         .publishedDate(LocalDateTime.now())
@@ -111,22 +111,21 @@ class PrivateEventControllerSpec extends Specification {
     def "Should return 200 when update events"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), new DateTimeConverter(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
         def controller = new PrivateEventController(service, eventMapper, Mock(RequestMapper))
         def server = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MainServiceHandler)
                 .build()
 
-        and:
         def event = UpdateEventUserRequestDto.builder()
                 .annotation("a" * 20)
                 .categoryId(1L)
                 .description("a" * 25)
-                .eventDate("2000-01-01 12:00:00")
-                .location(LocationDto.builder().build())
+                .eventDate(LocalDateTime.of(2000, 1, 1, 12, 0, 0))
+                .location(LocationDto.builder().lat(0).lon(0).build())
                 .paid(true)
-                .participantLimit(0)
+                .participantLimit(1)
                 .requestModeration(true)
                 .stateAction(StateAction.REJECT_EVENT)
                 .title("test")
@@ -134,17 +133,18 @@ class PrivateEventControllerSpec extends Specification {
         when:
         def request = patch("/users/1/events/1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(new JsonBuilder(event).toString())
+                .content(new ObjectMapper().writeValueAsString(event))
         and:
         server.perform(request)
                 .andExpect(status().isOk())
         then:
         interaction {
-            1 * service.updateEventById(1L, 1L, _ as UpdateEventRequest) >> {
+            1 * service.updateEventById(1L, 1L, event) >> {
                 Event.builder()
-                        .category(Category.builder().build())
-                        .location(Location.builder().build())
+                        .category(Category.builder().id(3).name("Name").build())
+                        .location(Location.builder().lat(0).lon(0).build())
                         .eventDate(LocalDateTime.now())
+                        .participantLimit(2)
                         .createdDate(LocalDateTime.now())
                         .publishedDate(LocalDateTime.now())
                         .initiator(User.builder().build())
@@ -157,8 +157,8 @@ class PrivateEventControllerSpec extends Specification {
     def "Should return 200 when update request status"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), new DateTimeConverter(), Clock.systemUTC())
-        def requestMapper = new RequestMapper(new DateTimeConverter())
+        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
+        def requestMapper = new RequestMapper()
         def controller = new PrivateEventController(service, eventMapper, requestMapper)
         def server = MockMvcBuilders
                 .standaloneSetup(controller)
