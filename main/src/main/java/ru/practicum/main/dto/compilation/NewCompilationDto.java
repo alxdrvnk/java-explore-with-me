@@ -6,14 +6,16 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Value
 @Builder
 public class NewCompilationDto {
     List<Long> events;
-    Boolean pinned;
+    boolean pinned;
     @NotBlank
+    @Size(max = 255)
     String title;
 
     @JsonCreator
