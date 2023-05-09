@@ -149,7 +149,7 @@ public class EventServiceImpl implements EventService {
             for (ParticipationRequest er : eventRequests) {
                 checkRequestStatus(er);
                 if (request.getStatus().equals(RequestStatus.CONFIRMED)) {
-                    if (event.getConfirmedRequests() == event.getParticipantLimit()) {
+                    if (confirmsCount == event.getParticipantLimit()) {
                         throw new EwmIllegalArgumentException(
                                 String.format("Event with id: %d reached the limit", event.getId()));
                     }

@@ -2,7 +2,6 @@ package ru.practicum.main.service.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
                         String.format("Category with Id %d not found", id));
             }
             categoryRepository.deleteById(id);
-        } catch (ConstraintViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new EwmIllegalArgumentException(
                     String.format("Catgory with id: %d not empty", id));
         }

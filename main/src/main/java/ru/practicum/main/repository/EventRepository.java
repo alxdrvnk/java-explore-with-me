@@ -12,6 +12,28 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
+    @Query(value =
+            "SELECT new ru.practicum.main.model.event.Event(" +
+                    "e.id," +
+                    "e.annotation," +
+                    "e.category," +
+                    "COUNT(pr.id)," +
+                    "e.createdDate," +
+                    "e.description," +
+                    "e.eventDate," +
+                    "e.initiator," +
+                    "e.location," +
+                    "e.paid," +
+                    "e.participantLimit," +
+                    "e.publishedDate," +
+                    "e.moderation," +
+                    "e.state," +
+                    "e.title) FROM Event As e " +
+                    "LEFT JOIN ParticipationRequest As pr " +
+                    "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
+                    "WHERE e.id = :id " +
+                    "GROUP BY e.id")
+    Optional<Event> findById(Long id);
 
     @Query(value =
             "SELECT new ru.practicum.main.model.event.Event(" +
