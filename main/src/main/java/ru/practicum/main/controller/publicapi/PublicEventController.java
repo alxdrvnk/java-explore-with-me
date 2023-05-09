@@ -1,9 +1,8 @@
 package ru.practicum.main.controller.publicapi;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 import ru.practicum.main.dto.event.EventFullDto;
 import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.dto.event.EventShortDto;
@@ -13,8 +12,7 @@ import ru.practicum.main.service.event.EventService;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
-@Slf4j
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class PublicEventController implements PublicEventApi {
 
@@ -23,7 +21,6 @@ public class PublicEventController implements PublicEventApi {
 
     @Override
     public ResponseEntity<Collection<EventShortDto>> getEvents(EventSearchFilter filter, HttpServletRequest request) {
-        log.info("Get events with filter: {}, request: {}", filter, request);
         return ResponseEntity.ok(
                 eventMapper.toEventShortDtoList(eventService.getAllEvents(
                         filter,

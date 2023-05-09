@@ -2,14 +2,16 @@ package ru.practicum.main.controller.publicapi;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.main.dto.compilation.CompilationDto;
 import ru.practicum.main.mapper.compilation.CompilationMapper;
 import ru.practicum.main.service.compilation.CompilationService;
 
 import java.util.Collection;
 
-@RestController
+@Controller
+@Validated
 @RequiredArgsConstructor
 public class PublicCompilationController implements PublicCompilationApi {
 

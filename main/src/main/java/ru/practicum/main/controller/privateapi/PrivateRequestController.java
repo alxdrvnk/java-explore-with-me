@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 import ru.practicum.main.dto.request.ParticipationRequestDto;
 import ru.practicum.main.mapper.request.RequestMapper;
 import ru.practicum.main.service.request.ParticipationRequestService;
@@ -12,7 +12,7 @@ import ru.practicum.main.service.request.ParticipationRequestService;
 import java.util.Collection;
 
 @Slf4j(topic = "Private Request Controller")
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class PrivateRequestController implements PrivateRequestApi {
 

@@ -9,13 +9,14 @@ import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.dto.event.EventShortDto;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Collection;
 
 @RequestMapping("/events")
 public interface PublicEventApi {
 
     @GetMapping
-    ResponseEntity<Collection<EventShortDto>> getEvents(EventSearchFilter filter, HttpServletRequest request);
+    ResponseEntity<Collection<EventShortDto>> getEvents(@Valid EventSearchFilter filter, HttpServletRequest request);
 
     @GetMapping("/{id}")
     ResponseEntity<EventFullDto> getEventBy(@PathVariable("id") Long id, HttpServletRequest request);
