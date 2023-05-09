@@ -36,7 +36,7 @@ public class NewEventDto {
     LocationDto location;
     boolean paid;
     int participantLimit;
-    Boolean requestModeration;
+    boolean requestModeration;
     @NotBlank
     @Size(min = 3, max = 120)
     String title;
@@ -62,7 +62,7 @@ public class NewEventDto {
         } else {
             this.participantLimit = participantLimit;
         }
-        this.requestModeration = requestModeration;
+        this.requestModeration = requestModeration == null || requestModeration;
         this.title = title;
     }
 }
