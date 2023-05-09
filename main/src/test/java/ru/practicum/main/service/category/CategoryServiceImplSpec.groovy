@@ -1,7 +1,7 @@
 package ru.practicum.main.service.category
 
+import org.hibernate.NonUniqueObjectException
 import ru.practicum.main.exception.EwmAlreadyExistsException
-import ru.practicum.main.exception.EwmIllegalArgumentException
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.model.category.Category
 import ru.practicum.main.repository.CategoryRepository
@@ -14,7 +14,7 @@ class CategoryServiceImplSpec extends Specification {
         given:
         def category = Category.builder().name("Test").build()
         def repository = Stub(CategoryRepository) {
-            findByName("Test") >> Optional.of(Category.builder().name("Test").build())
+            save(category) >> {throw new NonUniqueObjectException("", _ as Serializable, _ as String)}
         }
 
         def service = new CategoryServiceImpl(repository)
@@ -44,7 +44,7 @@ class CategoryServiceImplSpec extends Specification {
         given:
         def category = Category.builder().name("Test").build()
         def repository = Stub(CategoryRepository) {
-            findById(1L) >> Optional.of(Category.builder().name("Test").build())
+            findById(1L) >> Optional.of(Category.builder().name("Category").build())
             existsByName("Test") >> true
         }
 

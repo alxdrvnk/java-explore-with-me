@@ -2,18 +2,18 @@ package ru.practicum.main.service.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.NonUniqueObjectException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.exception.EwmAlreadyExistsException;
 import ru.practicum.main.exception.EwmIllegalArgumentException;
-import ru.practicum.main.exception.EwmInternalServerException;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.model.category.Category;
 import ru.practicum.main.repository.CategoryRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j(topic = "Admin Category Service")
 @Service
@@ -26,27 +26,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category createCategory(Category category) {
         log.info("Create new category with data: {}", category);
-        Optional<Category> createdCategory;
-        try {
-            createdCategory = categoryRepository.findByName(category.getName());
-        } catch (Exception e) {
-            log.error("Failed to create Category: {}", category, e);
-            throw new EwmInternalServerException(String.format(
-                    "Failed to create Category %s", category.getName()), e);
-        }
-
-        if (createdCategory.isPresent()) {
-            log.info("Category {} already exists", category.getName());
-            throw new EwmAlreadyExistsException(String.format(
-                    "Category %s already exists", category.getName()));
-        }
-
         try {
             return categoryRepository.save(category);
-        } catch (Exception e) {
-            log.error("Failed to create Category {}", category, e);
-            throw new EwmInternalServerException(String.format(
-                    "Failed to create Category %s", category.getName()), e);
+        } catch (NonUniqueObjectException e) {
+            throw new EwmAlreadyExistsException(String.format(
+                    "Category with name %s already exists", category.getName()));
         }
     }
 
@@ -54,26 +38,25 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category updateCategory(Long id, Category category) {
         Category dbCategory = getById(id);
-        if (categoryRepository.existsByName(category.getName())) {
+        if (!dbCategory.getName().equals(category.getName()) && categoryRepository.existsByName(category.getName())) {
             throw new EwmAlreadyExistsException(
                     String.format("Category with Name %s already exists", category.getName()));
         }
         return categoryRepository.save(dbCategory.withName(category.getName()));
     }
 
-    //Необходимо выбрасывать ошибку
     @Override
     public void deleteCategory(Long id) {
         try {
             if (!categoryRepository.existsById(id)) {
-                throw new EwmNotFoundException(String.format("Category with Id %d not found", id));
+                throw new EwmNotFoundException(
+                        String.format("Category with Id %d not found", id));
             }
             categoryRepository.deleteById(id);
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             throw new EwmIllegalArgumentException(
                     String.format("Catgory with id: %d not empty", id));
         }
-
     }
 
     @Override
