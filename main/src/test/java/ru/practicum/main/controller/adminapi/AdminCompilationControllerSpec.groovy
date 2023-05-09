@@ -13,6 +13,7 @@ import ru.practicum.main.model.event.Event
 import ru.practicum.main.service.compilation.CompilationService
 import spock.lang.Specification
 
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminCompilationControllerSpec extends Specification {
 
-    private final compilationMapper = new CompilationMapper()
+    private final compilationMapper = Mock(CompilationMapper)
 
     def "Should return 201 when create compilation"() {
         given:

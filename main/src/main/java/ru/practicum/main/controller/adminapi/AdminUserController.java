@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.main.dto.user.NewUserRequest;
 import ru.practicum.main.dto.user.UserDto;
 import ru.practicum.main.mapper.user.UserMapper;
@@ -15,7 +16,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Slf4j(topic = "Admin User Controller")
-@RestController
+@Controller
+@Validated
 @RequiredArgsConstructor
 public class AdminUserController implements AdminUserApi {
 
@@ -37,7 +39,7 @@ public class AdminUserController implements AdminUserApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteUser(Long id) {
+    public ResponseEntity<Void> deleteUser(Long id) {
         log.info("Admin delete request for User with id: {}", id);
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();

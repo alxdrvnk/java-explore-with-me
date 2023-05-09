@@ -21,5 +21,5 @@ public interface AdminUserApi extends AdminApi {
                                                  @RequestParam(defaultValue = "10") Integer size);
 
     @DeleteMapping("/users/{id}")
-    ResponseEntity<Object> deleteUser(@PathVariable("id") Long id);
+    ResponseEntity<Void> deleteUser(@PathVariable("id") Long id);
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 import ru.practicum.main.dto.category.CategoryDto;
 import ru.practicum.main.dto.category.NewCategoryDto;
 import ru.practicum.main.mapper.category.CategoryMapper;
@@ -12,7 +12,7 @@ import ru.practicum.main.model.category.Category;
 import ru.practicum.main.service.category.CategoryService;
 
 @Slf4j(topic = "Admin Category Controller")
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class AdminCategoryController implements AdminCategoryApi {
 
@@ -34,7 +34,7 @@ public class AdminCategoryController implements AdminCategoryApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteCategory(Long id) {
+    public ResponseEntity<Void> deleteCategory(Long id) {
         log.info("Admin delete request for Category with id: {}", id);
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();

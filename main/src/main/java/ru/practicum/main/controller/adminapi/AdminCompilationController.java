@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 import ru.practicum.main.dto.compilation.CompilationDto;
 import ru.practicum.main.dto.compilation.NewCompilationDto;
 import ru.practicum.main.dto.compilation.UpdateCompilationRequestDto;
@@ -13,7 +13,7 @@ import ru.practicum.main.model.compilation.Compilation;
 import ru.practicum.main.service.compilation.CompilationService;
 
 @Slf4j(topic = "Admin Compilation Controller")
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class AdminCompilationController implements AdminCompilationApi {
 
@@ -30,7 +30,7 @@ public class AdminCompilationController implements AdminCompilationApi {
     }
 
     @Override
-    public ResponseEntity<Object> deleteCompilation(Long id) {
+    public ResponseEntity<Void> deleteCompilation(Long id) {
         log.info("Admin delete request for Compilation with id: {}", id);
         compilationService.deleteCompilation(id);
         return ResponseEntity.noContent().build();
