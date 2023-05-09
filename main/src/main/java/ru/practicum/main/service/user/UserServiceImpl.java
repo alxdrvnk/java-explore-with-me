@@ -3,6 +3,7 @@ package ru.practicum.main.service.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.NonUniqueObjectException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
         log.info("Create new User: {}", user);
         try {
             return userRepository.save(user);
-        } catch (NonUniqueObjectException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new EwmAlreadyExistsException(String.format(
                     "User with email %s already exists", user.getEmail()));
         }
