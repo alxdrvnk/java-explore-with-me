@@ -5,14 +5,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Getter
-public class UpdateEventRequestDto {
+@SuperBuilder
+@AllArgsConstructor
+public abstract class UpdateEventRequestDto {
     @Size(min = 20, max = 2000)
     private String annotation;
     private Long categoryId;
@@ -29,4 +33,6 @@ public class UpdateEventRequestDto {
     private Boolean requestModeration;
     @Size(min = 3, max = 120)
     private String title;
+    private StateAction stateAction;
+
 }

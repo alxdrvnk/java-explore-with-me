@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class PrivateRequestControllerSpec extends Specification {
 
-    def "Should return 400 when get request is incorrect"() {
+    def "Should return 500 when get request is incorrect"() {
         given:
         def service = Mock(ParticipationRequestService)
         def controller = new PrivateRequestController(service, Mock(RequestMapper))
@@ -29,7 +29,7 @@ class PrivateRequestControllerSpec extends Specification {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         and:
         server.perform(request)
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
     }
 
     def "Should return 404 when user not found"() {

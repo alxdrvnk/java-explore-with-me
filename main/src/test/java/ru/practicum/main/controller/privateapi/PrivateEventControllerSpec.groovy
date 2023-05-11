@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonBuilder
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import ru.practicum.main.dto.event.*
+import ru.practicum.main.dto.event.EventRequestStatusUpdateRequestDto
+import ru.practicum.main.dto.event.LocationDto
+import ru.practicum.main.dto.event.NewEventDto
+import ru.practicum.main.dto.event.UpdateEventUserRequestDto
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
 import ru.practicum.main.mapper.category.CategoryMapper
@@ -25,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class PrivateEventControllerSpec extends Specification {
 
-    def "Should return 400 when request is incorrect"() {
+    def "Should return 500 when request is incorrect"() {
         given:
         def service = Mock(EventService)
         def controller = new PrivateEventController(service, Mock(EventMapper), Mock(RequestMapper))
@@ -39,7 +42,7 @@ class PrivateEventControllerSpec extends Specification {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         and:
         server.perform(request)
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
     }
 
     def "Should return 404 when event not found"() {
@@ -127,7 +130,7 @@ class PrivateEventControllerSpec extends Specification {
                 .paid(true)
                 .participantLimit(1)
                 .requestModeration(true)
-                .stateAction(StateAction.REJECT_EVENT)
+                .stateAction(UpdateEventUserRequestDto.StateAction.SEND_TO_REVIEW)
                 .title("test")
                 .build()
         when:

@@ -1,6 +1,6 @@
 package ru.practicum.main.service.category
 
-import org.hibernate.NonUniqueObjectException
+import org.springframework.dao.DataIntegrityViolationException
 import ru.practicum.main.exception.EwmAlreadyExistsException
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.model.category.Category
@@ -14,7 +14,7 @@ class CategoryServiceImplSpec extends Specification {
         given:
         def category = Category.builder().name("Test").build()
         def repository = Stub(CategoryRepository) {
-            save(category) >> {throw new NonUniqueObjectException("", _ as Serializable, _ as String)}
+            save(category) >> { throw new DataIntegrityViolationException("") }
         }
 
         def service = new CategoryServiceImpl(repository)

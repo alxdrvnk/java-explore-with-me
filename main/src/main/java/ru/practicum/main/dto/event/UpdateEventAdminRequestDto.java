@@ -1,18 +1,16 @@
 package ru.practicum.main.dto.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-@Builder
 @Getter
 @Jacksonized
-@AllArgsConstructor
+@SuperBuilder
 public class UpdateEventAdminRequestDto extends UpdateEventRequestDto {
     private StateAction stateAction;
 
-    public enum StateAction {
+    public enum StateAction implements ru.practicum.main.dto.event.StateAction {
         PUBLISH_EVENT,
         REJECT_EVENT
     }

@@ -1,6 +1,6 @@
 package ru.practicum.main.service.user
 
-import org.hibernate.NonUniqueObjectException
+import org.springframework.dao.DataIntegrityViolationException
 import ru.practicum.main.exception.EwmAlreadyExistsException
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.model.user.User
@@ -16,7 +16,7 @@ class UserServiceImplSpec extends Specification {
                 .build()
 
         def repository = Stub(UserRepository) {
-            save(user) >> { throw new NonUniqueObjectException("", _ as Serializable, _ as String)}
+            save(user) >> { throw new DataIntegrityViolationException("") }
         }
 
         def service = new UserServiceImpl(repository)

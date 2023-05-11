@@ -17,6 +17,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static ru.practicum.main.dto.event.UpdateEventAdminRequestDto.StateAction.PUBLISH_EVENT;
+import static ru.practicum.main.dto.event.UpdateEventAdminRequestDto.StateAction.REJECT_EVENT;
+import static ru.practicum.main.dto.event.UpdateEventUserRequestDto.StateAction.CANCEL_REVIEW;
+import static ru.practicum.main.dto.event.UpdateEventUserRequestDto.StateAction.SEND_TO_REVIEW;
+
 @Component
 @RequiredArgsConstructor
 public class EventMapper {
@@ -99,33 +104,14 @@ public class EventMapper {
                 .title(dto.getTitle())
                 .build();
     }
-    //TODO: FIX IT!
-    public UpdateEventRequest toUpdateEventRequest(UpdateEventRequestDto dto) {
-        return UpdateEventRequest.builder()
-                .annotation(dto.getAnnotation())
-                .categoryId(dto.getCategoryId())
-                .description(dto.getDescription())
-                .eventDate(dto.getEventDate() == null ?
-                        null : dto.getEventDate())
-                .location(dto.getLocation() == null ?
-                        null : toLocation(dto.getLocation()))
-                .paid(dto.getPaid())
-                .participantLimit(dto.getParticipantLimit())
-                .eventState(dto.getStateAction() == null ?
-                        null : toEventState(dto.getStateAction()))
-                .title(dto.getTitle())
-                .build();
-    }
 
-    //TODO: FIX IT!
-    public UpdateEventRequest toUpdateEventRequest(UpdateEventAdminRequestDto updateRequest) {
+    public UpdateEventRequest toUpdateEventRequest(UpdateEventRequestDto updateRequest) {
 
         return UpdateEventRequest.builder()
                 .annotation(updateRequest.getAnnotation())
                 .categoryId(updateRequest.getCategoryId())
                 .description(updateRequest.getDescription())
-                .eventDate(updateRequest.getEventDate() == null ?
-                        null : updateRequest.getEventDate())
+                .eventDate(updateRequest.getEventDate())
                 .location(updateRequest.getLocation() == null ?
                         null : toLocation(updateRequest.getLocation()))
                 .paid(updateRequest.getPaid())
@@ -137,18 +123,16 @@ public class EventMapper {
     }
 
     EventState toEventState(StateAction stateAction) {
-        switch (stateAction) {
-            case PUBLISH_EVENT:
-                return EventState.PUBLISHED;
-            case SEND_TO_REVIEW:
-                return EventState.PENDING;
-            case CANCEL_REVIEW:
-                return EventState.CANCELED;
-            case REJECT_EVENT:
-                return EventState.REJECTED;
-            default:
-                return null;
+        if (PUBLISH_EVENT.equals(stateAction)) {
+            return EventState.PUBLISHED;
+        } else if (SEND_TO_REVIEW.equals(stateAction)) {
+            return EventState.PENDING;
+        } else if (CANCEL_REVIEW.equals(stateAction)) {
+            return EventState.CANCELED;
+        } else if (REJECT_EVENT.equals(stateAction)) {
+            return EventState.REJECTED;
         }
+        return null;
     }
 
     public EventRequestStatusUpdateRequest toEventRequestStatusUpdateRequests(EventRequestStatusUpdateRequestDto requestDto) {

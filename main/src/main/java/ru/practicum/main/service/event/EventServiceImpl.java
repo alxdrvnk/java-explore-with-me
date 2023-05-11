@@ -46,14 +46,12 @@ public class EventServiceImpl implements EventService {
     @Override
     public Collection<Event> getAllEvents(EventSearchFilter eventSearchFilter) {
         EventSpecification spec = new EventSpecification(eventSearchFilter, clock);
+
         PageRequest pageRequest = PageRequest.of(eventSearchFilter.getFrom() / eventSearchFilter.getSize(),
                 eventSearchFilter.getSize());
-        List<Event> events = eventRepository.findAll(spec, pageRequest).getContent();
-        Map<Long, Integer> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
-                events.stream().map(Event::getId).collect(Collectors.toList()));
 
-        events = events.stream().map(e ->
-            e.withViews(confirmRequestsCount.get(e.getId()))).collect(Collectors.toList());
+        List<Event> events = eventRepository.findAll(spec, pageRequest).getContent();
+        events = getConfirmedRequestsCountForEvents(events);
         return getViewsStat(events, "/events");
     }
 
@@ -251,5 +249,22 @@ public class EventServiceImpl implements EventService {
                             mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
         }
         return eventList;
+    }
+
+    private List<Event> getConfirmedRequestsCountForEvents(List<Event> eventList) {
+
+        List<Object[]> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
+                eventList.stream().map(Event::getId).collect(Collectors.toList()));
+
+        Map<Long, Integer> countMap = new HashMap<>();
+
+        for (int i = 0; i < confirmRequestsCount.size(); i++) {
+            countMap.put((Long) confirmRequestsCount.get(i)[0], (Integer) confirmRequestsCount.get(i)[1]);
+        }
+
+        return eventList.stream().map(e -> e.withConfirmedRequests(countMap.get(e.getId())))
+                .collect(Collectors.toList());
+
+
     }
 }

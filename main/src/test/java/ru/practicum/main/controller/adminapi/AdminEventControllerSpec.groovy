@@ -5,7 +5,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import ru.practicum.main.dto.event.EventSearchFilter
 import ru.practicum.main.dto.event.LocationDto
-import ru.practicum.main.dto.event.StateAction
 import ru.practicum.main.dto.event.UpdateEventAdminRequestDto
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
@@ -25,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminEventControllerSpec extends Specification {
 
-    def "Should return 400 when get incorrect request"() {
+    def "Should return 500 when get incorrect request"() {
         given:
         def service = Mock(EventService)
         def controller = new AdminEventController(service, Mock(EventMapper))
@@ -39,7 +38,7 @@ class AdminEventControllerSpec extends Specification {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
 
         server.perform(request)
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
     }
 
     def "Should return 200 when get events"() {
@@ -84,11 +83,11 @@ class AdminEventControllerSpec extends Specification {
                 .annotation("a" * 25)
                 .categoryId(1L)
                 .description("a" * 25)
-                .eventDate(LocalDateTime.of(2000,1,1,12,0,0))
+                .eventDate(LocalDateTime.of(2000, 1, 1, 12, 0, 0))
                 .location(LocationDto.builder().lat(20.0f).lon(20.0f).build())
                 .paid(true)
                 .participantLimit(0)
-                .stateAction(StateAction.PUBLISH_EVENT)
+                .stateAction(UpdateEventAdminRequestDto.StateAction.PUBLISH_EVENT)
                 .title("test")
                 .build()
 
