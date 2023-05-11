@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.stats.converter.DateTimeConverter;
 import ru.practicum.stats.dto.EndpointHitDto;
 import ru.practicum.stats.dto.ViewStatsDto;
 import ru.practicum.stats.mapper.StatsMapper;
@@ -22,13 +20,12 @@ public class StatsController {
 
     private final StatsService statsService;
     private final StatsMapper statsMapper;
-    private final DateTimeConverter dateTimeConverter;
 
     @PostMapping("/hit")
-    public ResponseEntity<Void> create(@RequestBody EndpointHitDto dto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void create(@RequestBody EndpointHitDto dto) {
         log.info("Add EndpointHit with data: " + dto);
         statsService.create(statsMapper.toEndpointHit(dto));
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")

@@ -9,6 +9,7 @@ import ru.practicum.main.model.event.EventState;
 import ru.practicum.main.model.user.User;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
@@ -103,4 +104,13 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
                     "WHERE e.initiator = :user AND e.id = :id " +
                     "GROUP BY e.id")
     Optional<Event> findByIdAndInitiator(Long id, User user);
+
+
+    @Query(
+            "SELECT new map (e.id, COUNT(pr.id) FROM Event AS e" +
+            "LEFT JOIN ParticipationRequest As pr " +
+            "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
+            "WHERE e.id IN :eventIds"
+    )
+    Map<Long, Integer> getConfirmedRequestCountForEvents(List<Long> eventIds);
 }

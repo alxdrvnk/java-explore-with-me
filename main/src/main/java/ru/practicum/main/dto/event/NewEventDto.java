@@ -3,7 +3,6 @@ package ru.practicum.main.dto.event;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -33,6 +32,7 @@ public class NewEventDto {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     LocalDateTime eventDate;
     @Valid
+    @NotNull
     LocationDto location;
     boolean paid;
     int participantLimit;

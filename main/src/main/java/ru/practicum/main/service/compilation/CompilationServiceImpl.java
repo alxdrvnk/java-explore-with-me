@@ -31,9 +31,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public Compilation createCompilation(NewCompilation compilation) {
         log.info("Create new Compilation: {}", compilation);
-        List<Event> events = eventService.getAllEventsByIds(compilation.getEvents());
-        if (events == null) {
-            events = Collections.emptyList();
+        List<Event> events = Collections.emptyList();
+        if (compilation.getEvents() != null) {
+            events = eventService.getAllEventsByIds(compilation.getEvents());
         }
         return compilationRepository.save(
                 new Compilation(null,

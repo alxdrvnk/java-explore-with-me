@@ -48,7 +48,13 @@ public class EventServiceImpl implements EventService {
         EventSpecification spec = new EventSpecification(eventSearchFilter, clock);
         PageRequest pageRequest = PageRequest.of(eventSearchFilter.getFrom() / eventSearchFilter.getSize(),
                 eventSearchFilter.getSize());
-        return eventRepository.findAll(spec, pageRequest).getContent();
+        List<Event> events = eventRepository.findAll(spec, pageRequest).getContent();
+        Map<Long, Integer> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
+                events.stream().map(Event::getId).collect(Collectors.toList()));
+
+        events = events.stream().map(e ->
+            e.withViews(confirmRequestsCount.get(e.getId()))).collect(Collectors.toList());
+        return getViewsStat(events, "/events");
     }
 
     @Override

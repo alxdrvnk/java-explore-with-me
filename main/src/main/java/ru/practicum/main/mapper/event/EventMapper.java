@@ -99,8 +99,8 @@ public class EventMapper {
                 .title(dto.getTitle())
                 .build();
     }
-
-    public UpdateEventRequest toUpdateEventRequest(UpdateEventUserRequestDto dto) {
+    //TODO: FIX IT!
+    public UpdateEventRequest toUpdateEventRequest(UpdateEventRequestDto dto) {
         return UpdateEventRequest.builder()
                 .annotation(dto.getAnnotation())
                 .categoryId(dto.getCategoryId())
@@ -117,6 +117,7 @@ public class EventMapper {
                 .build();
     }
 
+    //TODO: FIX IT!
     public UpdateEventRequest toUpdateEventRequest(UpdateEventAdminRequestDto updateRequest) {
 
         return UpdateEventRequest.builder()

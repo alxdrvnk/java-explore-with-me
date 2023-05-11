@@ -84,6 +84,13 @@ public class MainServiceHandler {
         return makeErrorMessage(HttpStatus.BAD_REQUEST, "Incorrect request", exception.getMessage());
     }
 
+    @ExceptionHandler(value = Exception.class)
+    protected ResponseEntity<Object> handlerHttpMessageNotReadableException(Exception exception,
+                                                                            WebRequest request) {
+        log.error("Error: {}", exception.getMessage(), exception);
+        return makeErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error",
+                exception.getMessage());
+    }
     private ResponseEntity<Object> makeErrorMessage(HttpStatus status, String reason, String message) {
         return new ResponseEntity<>(
                 EwmError.builder()
