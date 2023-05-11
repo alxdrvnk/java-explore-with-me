@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.practicum.main.dto.event.EventFullDto;
-import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.dto.event.EventShortDto;
+import ru.practicum.main.dto.event.PublicEventSearchFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -16,7 +16,8 @@ import java.util.Collection;
 public interface PublicEventApi {
 
     @GetMapping
-    ResponseEntity<Collection<EventShortDto>> getEvents(@Valid EventSearchFilter filter, HttpServletRequest request);
+    ResponseEntity<Collection<EventShortDto>> getEvents(@Valid PublicEventSearchFilter filter,
+                                                        HttpServletRequest request);
 
     @GetMapping("/{id}")
     ResponseEntity<EventFullDto> getEventBy(@PathVariable("id") Long id, HttpServletRequest request);

@@ -91,6 +91,7 @@ public class MainServiceHandler {
         return makeErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error",
                 exception.getMessage());
     }
+
     private ResponseEntity<Object> makeErrorMessage(HttpStatus status, String reason, String message) {
         return new ResponseEntity<>(
                 EwmError.builder()

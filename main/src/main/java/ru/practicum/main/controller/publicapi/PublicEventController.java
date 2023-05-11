@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import ru.practicum.main.dto.event.EventFullDto;
-import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.dto.event.EventShortDto;
+import ru.practicum.main.dto.event.PublicEventSearchFilter;
 import ru.practicum.main.mapper.event.EventMapper;
 import ru.practicum.main.service.event.EventService;
 
@@ -20,10 +20,11 @@ public class PublicEventController implements PublicEventApi {
     private final EventMapper eventMapper;
 
     @Override
-    public ResponseEntity<Collection<EventShortDto>> getEvents(EventSearchFilter filter, HttpServletRequest request) {
+    public ResponseEntity<Collection<EventShortDto>> getEvents(PublicEventSearchFilter filter,
+                                                               HttpServletRequest request) {
         return ResponseEntity.ok(
                 eventMapper.toEventShortDtoList(eventService.getAllEvents(
-                        filter,
+                        eventMapper.toEventSearchFilter(filter),
                         request.getRequestURI(),
                         request.getRemoteAddr())));
 

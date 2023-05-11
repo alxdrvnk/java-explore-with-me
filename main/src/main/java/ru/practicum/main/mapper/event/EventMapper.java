@@ -208,4 +208,19 @@ public class EventMapper {
                 .views(0).build();
     }
 
+    public EventSearchFilter toEventSearchFilter(PublicEventSearchFilter publicEventSearchFilter) {
+        return EventSearchFilter.builder()
+                .text(publicEventSearchFilter.getText())
+                .users(publicEventSearchFilter.getUsers())
+                .states(new String[]{"PUBLISHED"})
+                .categories(publicEventSearchFilter.getCategories())
+                .rangeStart(publicEventSearchFilter.getRangeStart())
+                .rangeEnd(publicEventSearchFilter.getRangeEnd())
+                .paid(publicEventSearchFilter.getPaid())
+                .sort(publicEventSearchFilter.getSort())
+                .onlyAvailable(publicEventSearchFilter.getOnlyAvailable())
+                .from(publicEventSearchFilter.getFrom())
+                .size(publicEventSearchFilter.getSize())
+                .build();
+    }
 }
