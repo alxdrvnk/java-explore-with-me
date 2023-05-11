@@ -109,7 +109,8 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
             "SELECT e.id, COUNT(pr.id) FROM Event AS e " +
                     "LEFT JOIN ParticipationRequest As pr " +
                     "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
-                    "WHERE e.id IN :eventIds"
+                    "WHERE e.id IN :eventIds " +
+                    "GROUP BY e.id"
     )
     List<Object[]> getConfirmedRequestCountForEvents(List<Long> eventIds);
 }

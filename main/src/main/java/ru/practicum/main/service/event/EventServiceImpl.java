@@ -258,8 +258,8 @@ public class EventServiceImpl implements EventService {
 
         Map<Long, Integer> countMap = new HashMap<>();
 
-        for (int i = 0; i < confirmRequestsCount.size(); i++) {
-            countMap.put((Long) confirmRequestsCount.get(i)[0], (Integer) confirmRequestsCount.get(i)[1]);
+        for (Object[] objects : confirmRequestsCount) {
+            countMap.put((Long) objects[0], ((Long) objects[1]).intValue());
         }
 
         return eventList.stream().map(e -> e.withConfirmedRequests(countMap.get(e.getId())))
