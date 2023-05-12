@@ -208,7 +208,7 @@ public class EventMapper {
                 .views(0).build();
     }
 
-    public EventSearchFilter toEventSearchFilter(PublicEventSearchFilter publicEventSearchFilter) {
+    public EventSearchFilter toEventSearchPublicFilter(PublicEventSearchFilter publicEventSearchFilter) {
         return EventSearchFilter.builder()
                 .text(publicEventSearchFilter.getText())
                 .users(publicEventSearchFilter.getUsers())

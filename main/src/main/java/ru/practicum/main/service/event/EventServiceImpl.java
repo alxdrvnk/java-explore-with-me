@@ -238,33 +238,28 @@ public class EventServiceImpl implements EventService {
     }
 
     private Collection<Event> getViewsStat(List<Event> eventList, String uri) {
-        List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
-        LocalDateTime start = eventList.stream().map(Event::getEventDate).min(Comparator.naturalOrder()).get();
-        List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(clock), uris, true);
-        if (!stats.isEmpty()) {
-            Map<String, Long> mappedStatsByUri = stats.stream()
-                    .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
-            eventList = eventList.stream()
-                    .map(event -> event.withViews(
-                            mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
+        if (!eventList.isEmpty()) {
+            List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
+            LocalDateTime start = eventList.stream().map(Event::getEventDate).min(Comparator.naturalOrder()).get();
+            List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(clock), uris, true);
+            if (!stats.isEmpty()) {
+                Map<String, Long> mappedStatsByUri = stats.stream()
+                        .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
+                eventList = eventList.stream()
+                        .map(event -> event.withViews(
+                                mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
+            }
         }
         return eventList;
     }
 
     private List<Event> getConfirmedRequestsCountForEvents(List<Event> eventList) {
 
-        List<Object[]> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
-                eventList.stream().map(Event::getId).collect(Collectors.toList()));
+        Map<Long, Integer> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
+                        eventList.stream().map(Event::getId).collect(Collectors.toList())).stream()
+                .collect(Collectors.toMap(EventsRequestCount::getEventId, EventsRequestCount::getReqCount));
 
-        Map<Long, Integer> countMap = new HashMap<>();
-
-        for (Object[] objects : confirmRequestsCount) {
-            countMap.put((Long) objects[0], ((Long) objects[1]).intValue());
-        }
-
-        return eventList.stream().map(e -> e.withConfirmedRequests(countMap.get(e.getId())))
+        return eventList.stream().map(e -> e.withConfirmedRequests(confirmRequestsCount.get(e.getId())))
                 .collect(Collectors.toList());
-
-
     }
 }

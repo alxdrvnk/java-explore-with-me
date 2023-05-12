@@ -24,7 +24,7 @@ public class PublicEventController implements PublicEventApi {
                                                                HttpServletRequest request) {
         return ResponseEntity.ok(
                 eventMapper.toEventShortDtoList(eventService.getAllEvents(
-                        eventMapper.toEventSearchFilter(filter),
+                        eventMapper.toEventSearchPublicFilter(filter),
                         request.getRequestURI(),
                         request.getRemoteAddr())));
 

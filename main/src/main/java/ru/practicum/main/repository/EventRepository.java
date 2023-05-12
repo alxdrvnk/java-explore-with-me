@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.main.model.event.Event;
 import ru.practicum.main.model.event.EventState;
+import ru.practicum.main.model.event.EventsRequestCount;
 import ru.practicum.main.model.user.User;
 
 import java.util.List;
@@ -112,5 +113,5 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
                     "WHERE e.id IN :eventIds " +
                     "GROUP BY e.id"
     )
-    List<Object[]> getConfirmedRequestCountForEvents(List<Long> eventIds);
+    List<EventsRequestCount> getConfirmedRequestCountForEvents(List<Long> eventIds);
 }

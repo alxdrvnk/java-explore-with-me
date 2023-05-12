@@ -20,7 +20,7 @@ class PublicEventControllerSpec extends Specification {
         given:
         def service = Mock(EventService)
         def eventMapper = Stub(EventMapper) {
-            toEventSearchFilter(_ as PublicEventSearchFilter) >> EventSearchFilter.builder().build()
+            toEventSearchPublicFilter(_ as PublicEventSearchFilter) >> EventSearchFilter.builder().build()
         }
         def controller = new PublicEventController(service, eventMapper)
         def server = MockMvcBuilders
