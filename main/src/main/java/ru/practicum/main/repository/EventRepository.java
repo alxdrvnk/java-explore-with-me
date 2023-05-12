@@ -107,7 +107,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
 
     @Query(
-            "SELECT e.id, COUNT(pr.id) FROM Event AS e " +
+            "SELECT e.id AS eventId, COUNT(pr.id) AS reqCount FROM Event AS e " +
                     "LEFT JOIN ParticipationRequest As pr " +
                     "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
                     "WHERE e.id IN :eventIds " +
