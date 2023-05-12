@@ -254,12 +254,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<Event> getConfirmedRequestsCountForEvents(List<Event> eventList) {
+        if (!eventList.isEmpty()) {
+            Map<Long, Integer> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
+                            eventList.stream().map(Event::getId).collect(Collectors.toList())).stream()
+                    .collect(Collectors.toMap(EventsRequestCount::getEventId, EventsRequestCount::getReqCount));
 
-        Map<Long, Integer> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
-                        eventList.stream().map(Event::getId).collect(Collectors.toList())).stream()
-                .collect(Collectors.toMap(EventsRequestCount::getEventId, EventsRequestCount::getReqCount));
-
-        return eventList.stream().map(e -> e.withConfirmedRequests(confirmRequestsCount.get(e.getId())))
-                .collect(Collectors.toList());
+            return eventList.stream().map(e -> e.withConfirmedRequests(confirmRequestsCount.get(e.getId())))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 }
