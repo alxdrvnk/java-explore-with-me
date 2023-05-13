@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.main.dto.event.*;
 import ru.practicum.main.dto.request.ParticipationRequestDto;
 import ru.practicum.main.mapper.event.EventMapper;
@@ -14,11 +15,11 @@ import ru.practicum.main.model.event.EventRequestStatusUpdateResult;
 import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.service.event.EventService;
 
-import javax.validation.Valid;
 import java.util.Collection;
 
 @Slf4j(topic = "Private Event Controller")
-@RestController
+@Controller
+@Validated
 @RequiredArgsConstructor
 public class PrivateEventController implements PrivateEventApi {
 
@@ -27,7 +28,7 @@ public class PrivateEventController implements PrivateEventApi {
     private final RequestMapper requestMapper;
 
     @Override
-    public ResponseEntity<EventFullDto> createEvent(Long userId, @Valid NewEventDto dto) {
+    public ResponseEntity<EventFullDto> createEvent(Long userId, NewEventDto dto) {
         log.info("User with id: {} create Event with data: {}", userId, dto);
         Event event = eventService.createEvent(userId, eventMapper.toNewEventRequest(dto));
         return new ResponseEntity<>(eventMapper.toEventFullDto(event), HttpStatus.CREATED);

@@ -1,5 +1,6 @@
 package ru.practicum.main.dto.event;
 
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -15,10 +16,9 @@ import java.util.Objects;
 @Value
 @Builder
 @Jacksonized
-public class EventSearchFilter {
+public class PublicEventSearchFilter {
     String text;
     Long[] users;
-    String[] states;
     Long[] categories;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime rangeStart;
@@ -33,22 +33,20 @@ public class EventSearchFilter {
     Integer size;
 
     @JsonCreator
-    public EventSearchFilter(@JsonProperty(value = "text") String text,
-                             @JsonProperty(value = "users") Long[] users,
-                             @JsonProperty(value = "states") String[] states,
-                             @JsonProperty(value = "categories") Long[] categories,
-                             @JsonProperty(value = "rangeStart")
-                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                             @JsonProperty(value = "rangeEnd")
-                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                             @JsonProperty(value = "paid") Boolean paid,
-                             @JsonProperty(value = "sort") String sort,
-                             @JsonProperty(value = "onlyAvailable") Boolean onlyAvailable,
-                             @JsonProperty(value = "from") Integer from,
-                             @JsonProperty(value = "size") Integer size) {
+    public PublicEventSearchFilter(@JsonProperty(value = "text") String text,
+                                   @JsonProperty(value = "users") Long[] users,
+                                   @JsonProperty(value = "categories") Long[] categories,
+                                   @JsonProperty(value = "rangeStart")
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                   @JsonProperty(value = "rangeEnd")
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                   @JsonProperty(value = "paid") Boolean paid,
+                                   @JsonProperty(value = "sort") String sort,
+                                   @JsonProperty(value = "onlyAvailable") Boolean onlyAvailable,
+                                   @JsonProperty(value = "from") Integer from,
+                                   @JsonProperty(value = "size") Integer size) {
         this.text = text;
         this.users = users;
-        this.states = states;
         this.categories = categories;
         this.rangeStart = rangeStart;
         this.rangeEnd = rangeEnd;

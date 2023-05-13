@@ -26,8 +26,7 @@ class EventServiceImplSpec extends Specification {
         given:
         def eventRepository = Stub(EventRepository)
         def requestRepository = Stub(RequestRepository)
-        def eventMapper = new EventMapper(new CategoryMapper(),
-                new UserMapper(), new DateTimeConverter(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
         def categoryService = Mock(CategoryService)
         def userService = Mock(UserService)
         def service = new EventServiceImpl(Mock(StatsClient),
@@ -59,7 +58,7 @@ class EventServiceImplSpec extends Specification {
             }
         }
         def eventMapper = new EventMapper(new CategoryMapper(),
-                new UserMapper(), new DateTimeConverter(), Clock.systemUTC())
+                new UserMapper(), Clock.systemUTC())
         def categoryService = Mock(CategoryService)
         def userService = Mock(UserService)
         def service = new EventServiceImpl(Mock(StatsClient),

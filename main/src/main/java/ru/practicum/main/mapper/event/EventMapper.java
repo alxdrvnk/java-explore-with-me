@@ -17,13 +17,17 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static ru.practicum.main.dto.event.UpdateEventAdminRequestDto.StateAction.PUBLISH_EVENT;
+import static ru.practicum.main.dto.event.UpdateEventAdminRequestDto.StateAction.REJECT_EVENT;
+import static ru.practicum.main.dto.event.UpdateEventUserRequestDto.StateAction.CANCEL_REVIEW;
+import static ru.practicum.main.dto.event.UpdateEventUserRequestDto.StateAction.SEND_TO_REVIEW;
+
 @Component
 @RequiredArgsConstructor
 public class EventMapper {
 
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
-    private final DateTimeConverter dateTimeConverter;
     private final Clock clock;
 
     public EventFullDto toEventFullDto(Event event) {
@@ -32,9 +36,9 @@ public class EventMapper {
                 .annotation(event.getAnnotation())
                 .category(categoryMapper.toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
-                .createdOn(dateTimeConverter.formatDate(event.getCreatedDate()))
+                .createdOn(DateTimeConverter.formatDate(event.getCreatedDate()))
                 .description(event.getDescription())
-                .eventDate(dateTimeConverter.formatDate(event.getEventDate()))
+                .eventDate(DateTimeConverter.formatDate(event.getEventDate()))
                 .initiator(userMapper.toUserShortDto(event.getInitiator()))
                 .location(this.toLocationDto(event.getLocation()))
                 .paid(event.getPaid())
@@ -55,7 +59,7 @@ public class EventMapper {
                 .annotation(event.getAnnotation())
                 .category(categoryMapper.toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
-                .eventDate(dateTimeConverter.formatDate(event.getEventDate()))
+                .eventDate(DateTimeConverter.formatDate(event.getEventDate()))
                 .initiator(userMapper.toUserShortDto(event.getInitiator()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
@@ -91,41 +95,23 @@ public class EventMapper {
                 .categoryId(dto.getCategory())
                 .description(dto.getDescription())
                 .eventDate(dto.getEventDate() == null ?
-                        null : dateTimeConverter.parseDate(dto.getEventDate()))
+                        null : dto.getEventDate())
                 .location(dto.getLocation() == null ?
                         null : toLocation(dto.getLocation()))
-                .paid(dto.getPaid())
+                .paid(dto.isPaid())
                 .participantLimit(dto.getParticipantLimit())
-                .requestModeration(dto.getRequestModeration())
+                .requestModeration(dto.isRequestModeration())
                 .title(dto.getTitle())
                 .build();
     }
 
-    public UpdateEventRequest toUpdateEventRequest(UpdateEventUserRequestDto dto) {
-        return UpdateEventRequest.builder()
-                .annotation(dto.getAnnotation())
-                .categoryId(dto.getCategoryId())
-                .description(dto.getDescription())
-                .eventDate(dto.getEventDate() == null ?
-                        null : dateTimeConverter.parseDate(dto.getEventDate()))
-                .location(dto.getLocation() == null ?
-                        null : toLocation(dto.getLocation()))
-                .paid(dto.getPaid())
-                .participantLimit(dto.getParticipantLimit())
-                .eventState(dto.getStateAction() == null ?
-                        null : toEventState(dto.getStateAction()))
-                .title(dto.getTitle())
-                .build();
-    }
-
-    public UpdateEventRequest toUpdateEventRequest(UpdateEventAdminRequestDto updateRequest) {
+    public UpdateEventRequest toUpdateEventRequest(UpdateEventRequestDto updateRequest) {
 
         return UpdateEventRequest.builder()
                 .annotation(updateRequest.getAnnotation())
                 .categoryId(updateRequest.getCategoryId())
                 .description(updateRequest.getDescription())
-                .eventDate(updateRequest.getEventDate() == null ?
-                        null : dateTimeConverter.parseDate(updateRequest.getEventDate()))
+                .eventDate(updateRequest.getEventDate())
                 .location(updateRequest.getLocation() == null ?
                         null : toLocation(updateRequest.getLocation()))
                 .paid(updateRequest.getPaid())
@@ -137,18 +123,16 @@ public class EventMapper {
     }
 
     EventState toEventState(StateAction stateAction) {
-        switch (stateAction) {
-            case PUBLISH_EVENT:
-                return EventState.PUBLISHED;
-            case SEND_TO_REVIEW:
-                return EventState.PENDING;
-            case CANCEL_REVIEW:
-                return EventState.CANCELED;
-            case REJECT_EVENT:
-                return EventState.REJECTED;
-            default:
-                return null;
+        if (PUBLISH_EVENT.equals(stateAction)) {
+            return EventState.PUBLISHED;
+        } else if (SEND_TO_REVIEW.equals(stateAction)) {
+            return EventState.PENDING;
+        } else if (CANCEL_REVIEW.equals(stateAction)) {
+            return EventState.CANCELED;
+        } else if (REJECT_EVENT.equals(stateAction)) {
+            return EventState.REJECTED;
         }
+        return null;
     }
 
     public EventRequestStatusUpdateRequest toEventRequestStatusUpdateRequests(EventRequestStatusUpdateRequestDto requestDto) {
@@ -160,10 +144,10 @@ public class EventMapper {
 
     public Event partialEventUpdate(Event event, UpdateEventRequest updateRequest) {
         Event updatedEvent = event;
-        if (updateRequest.getAnnotation() != null) {
+        if (updateRequest.getAnnotation() != null && !updateRequest.getAnnotation().isBlank()) {
             updatedEvent = updatedEvent.withAnnotation(updateRequest.getAnnotation());
         }
-        if (updateRequest.getDescription() != null) {
+        if (updateRequest.getDescription() != null && !updateRequest.getDescription().isBlank()) {
             updatedEvent = updatedEvent.withDescription(updateRequest.getDescription());
         }
         if (updateRequest.getEventDate() != null) {
@@ -187,7 +171,7 @@ public class EventMapper {
             }
             updatedEvent = updatedEvent.withState(updateRequest.getEventState());
         }
-        if (updateRequest.getTitle() != null) {
+        if (updateRequest.getTitle() != null && !updateRequest.getTitle().isBlank()) {
             updatedEvent = updatedEvent.withTitle(updateRequest.getTitle());
         }
         return updatedEvent;
@@ -224,4 +208,19 @@ public class EventMapper {
                 .views(0).build();
     }
 
+    public EventSearchFilter toEventSearchPublicFilter(PublicEventSearchFilter publicEventSearchFilter) {
+        return EventSearchFilter.builder()
+                .text(publicEventSearchFilter.getText())
+                .users(publicEventSearchFilter.getUsers())
+                .states(new String[]{"PUBLISHED"})
+                .categories(publicEventSearchFilter.getCategories())
+                .rangeStart(publicEventSearchFilter.getRangeStart())
+                .rangeEnd(publicEventSearchFilter.getRangeEnd())
+                .paid(publicEventSearchFilter.getPaid())
+                .sort(publicEventSearchFilter.getSort())
+                .onlyAvailable(publicEventSearchFilter.getOnlyAvailable())
+                .from(publicEventSearchFilter.getFrom())
+                .size(publicEventSearchFilter.getSize())
+                .build();
+    }
 }

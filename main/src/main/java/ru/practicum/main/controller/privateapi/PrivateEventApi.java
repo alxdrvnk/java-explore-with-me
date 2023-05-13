@@ -18,8 +18,10 @@ public interface PrivateEventApi extends PrivateApi {
 
     @GetMapping("/events")
     ResponseEntity<Collection<EventShortDto>> getEventsByUser(@PathVariable("userId") Long userId,
-                                                              @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                              @RequestParam(defaultValue = "10") @Positive Integer size);
+                                                              @RequestParam(defaultValue = "0")
+                                                              @PositiveOrZero Integer from,
+                                                              @RequestParam(defaultValue = "10")
+                                                              @Positive Integer size);
 
     @GetMapping("/events/{eventId}")
     ResponseEntity<EventFullDto> getEventById(@PathVariable("userId") Long userId,
@@ -37,5 +39,6 @@ public interface PrivateEventApi extends PrivateApi {
     @PatchMapping("/events/{eventId}/requests")
     ResponseEntity<EventRequestStatusUpdateResultDto> updateRequests(@PathVariable("userId") Long userId,
                                                                      @PathVariable("eventId") Long eventId,
-                                                                     @RequestBody EventRequestStatusUpdateRequestDto requestDto);
+                                                                     @RequestBody
+                                                                     EventRequestStatusUpdateRequestDto requestDto);
 }

@@ -23,7 +23,7 @@ public class CompilationMapper {
     public NewCompilation toNewCompilation(NewCompilationDto compilationDto) {
         return NewCompilation.builder()
                 .events(compilationDto.getEvents())
-                .pinned(compilationDto.getPinned())
+                .pinned(compilationDto.isPinned())
                 .title(compilationDto.getTitle())
                 .build();
     }
@@ -64,7 +64,7 @@ public class CompilationMapper {
             updatedCompilation =  updatedCompilation.withPinned(update.getPinned());
         }
 
-        if (update.getTitle() != null) {
+        if (update.getTitle() != null && !update.getTitle().isBlank()) {
             updatedCompilation = updatedCompilation.withTitle(update.getTitle());
         }
 

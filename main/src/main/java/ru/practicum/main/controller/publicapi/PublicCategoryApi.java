@@ -15,8 +15,10 @@ import java.util.Collection;
 public interface PublicCategoryApi {
 
     @GetMapping
-    ResponseEntity<Collection<CategoryDto>> getAllCategories(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                            @RequestParam(defaultValue = "10") @Positive Integer size);
+    ResponseEntity<Collection<CategoryDto>> getAllCategories(@RequestParam(defaultValue = "0")
+                                                             @PositiveOrZero Integer from,
+                                                             @RequestParam(defaultValue = "10")
+                                                             @Positive Integer size);
 
     @GetMapping("/{id}")
     ResponseEntity<CategoryDto> getCategoryById(@PathVariable("id") Long id);

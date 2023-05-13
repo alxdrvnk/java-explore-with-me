@@ -1,15 +1,14 @@
 package ru.practicum.main.converter;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-@Component
+@UtilityClass
 public class DateTimeConverter {
-    public static final String DateTimeRegEx = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public LocalDateTime parseDate(String date) {

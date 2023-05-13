@@ -13,9 +13,9 @@ public interface AdminCompilationApi extends AdminApi {
     ResponseEntity<CompilationDto> createCompilation(@RequestBody @Valid NewCompilationDto compilationDto);
 
     @DeleteMapping("/compilations/{id}")
-    ResponseEntity<Object> deleteCompilation(@PathVariable("id") Long id);
+    ResponseEntity<Void> deleteCompilation(@PathVariable("id") Long id);
 
     @PatchMapping("/compilations/{id}")
     ResponseEntity<CompilationDto> updateCompilation(@PathVariable("id") Long id,
-                                                     @RequestBody UpdateCompilationRequestDto dto);
+                                                     @Valid @RequestBody UpdateCompilationRequestDto dto);
 }

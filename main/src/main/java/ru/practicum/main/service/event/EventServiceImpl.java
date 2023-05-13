@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.practicum.main.converter.DateTimeConverter;
 import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
@@ -40,18 +39,20 @@ public class EventServiceImpl implements EventService {
     private final UserService userService;
     private final RequestRepository requestRepository;
     private final Clock clock;
-    private final DateTimeConverter converter;
 
     @Value("${app.name}")
     private String appName;
 
     @Override
     public Collection<Event> getAllEvents(EventSearchFilter eventSearchFilter) {
-        EventSpecification spec = new EventSpecification(eventSearchFilter,
-                converter, clock);
+        EventSpecification spec = new EventSpecification(eventSearchFilter, clock);
+
         PageRequest pageRequest = PageRequest.of(eventSearchFilter.getFrom() / eventSearchFilter.getSize(),
                 eventSearchFilter.getSize());
-        return eventRepository.findAll(spec, pageRequest).getContent();
+
+        List<Event> events = eventRepository.findAll(spec, pageRequest).getContent();
+        events = getConfirmedRequestsCountForEvents(events);
+        return getViewsStat(events, "/events");
     }
 
     @Override
@@ -152,7 +153,7 @@ public class EventServiceImpl implements EventService {
             for (ParticipationRequest er : eventRequests) {
                 checkRequestStatus(er);
                 if (request.getStatus().equals(RequestStatus.CONFIRMED)) {
-                    if (event.getConfirmedRequests() == event.getParticipantLimit()) {
+                    if (confirmsCount == event.getParticipantLimit()) {
                         throw new EwmIllegalArgumentException(
                                 String.format("Event with id: %d reached the limit", event.getId()));
                     }
@@ -178,8 +179,7 @@ public class EventServiceImpl implements EventService {
     public Collection<Event> getAllEvents(EventSearchFilter filter, String uri, String ip) {
         statsClient.saveRequest(appName, uri, ip, LocalDateTime.now(clock));
         PageRequest pageRequest = PageRequest.of(filter.getFrom() / filter.getSize(), filter.getSize());
-        EventSpecification spec = new EventSpecification(filter,
-                converter, clock);
+        EventSpecification spec = new EventSpecification(filter, clock);
 
         List<Event> eventList = eventRepository.findAll(spec, pageRequest).getContent();
 
@@ -243,16 +243,31 @@ public class EventServiceImpl implements EventService {
     }
 
     private Collection<Event> getViewsStat(List<Event> eventList, String uri) {
-        List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
-        LocalDateTime start = LocalDateTime.of(1000, 1, 1, 12, 0, 0); //Возможно стоит вынести в отдельную переменную
-        List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(clock), uris, false);
-        if (!stats.isEmpty()) {
-            Map<String, Long> mappedStatsByUri = stats.stream()
-                    .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
-            eventList = eventList.stream()
-                    .map(event -> event.withViews(
-                            mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
+        if (!eventList.isEmpty()) {
+            List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
+            LocalDateTime start = eventList.stream().map(Event::getEventDate).min(Comparator.naturalOrder()).get();
+            List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(clock), uris, true);
+            if (!stats.isEmpty()) {
+                Map<String, Long> mappedStatsByUri = stats.stream()
+                        .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
+                eventList = eventList.stream()
+                        .map(event -> event.withViews(
+                                mappedStatsByUri.get(uri + "/" + event.getId()).intValue())).collect(Collectors.toList());
+            }
         }
         return eventList;
+    }
+
+    private List<Event> getConfirmedRequestsCountForEvents(List<Event> eventList) {
+        if (!eventList.isEmpty()) {
+            Map<Long, Long> confirmRequestsCount = eventRepository.getConfirmedRequestCountForEvents(
+                            eventList.stream().map(Event::getId).collect(Collectors.toList())).stream()
+                    .collect(Collectors.toMap(EventsRequestCount::getEventId, EventsRequestCount::getReqCount));
+
+            return eventList.stream().map(e -> e.withConfirmedRequests(confirmRequestsCount.get(e.getId()).intValue()))
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 }

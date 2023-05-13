@@ -1,5 +1,6 @@
 package ru.practicum.main.service.user
 
+import org.springframework.dao.DataIntegrityViolationException
 import ru.practicum.main.exception.EwmAlreadyExistsException
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.model.user.User
@@ -15,7 +16,7 @@ class UserServiceImplSpec extends Specification {
                 .build()
 
         def repository = Stub(UserRepository) {
-            findByEmail("test@mail.mail") >> { Optional.of(User.builder().build()) }
+            save(user) >> { throw new DataIntegrityViolationException("") }
         }
 
         def service = new UserServiceImpl(repository)

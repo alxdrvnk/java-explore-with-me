@@ -3,12 +3,10 @@ package ru.practicum.main.controller.publicapi
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import ru.practicum.main.dto.event.EventSearchFilter
+import ru.practicum.main.dto.event.PublicEventSearchFilter
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
-import ru.practicum.main.mapper.category.CategoryMapper
 import ru.practicum.main.mapper.event.EventMapper
-import ru.practicum.main.model.category.Category
-import ru.practicum.main.service.category.CategoryService
 import ru.practicum.main.service.event.EventService
 import spock.lang.Specification
 
@@ -21,7 +19,10 @@ class PublicEventControllerSpec extends Specification {
     def "Should return 200 when get all events"() {
         given:
         def service = Mock(EventService)
-        def controller = new PublicEventController(service, Mock(EventMapper))
+        def eventMapper = Stub(EventMapper) {
+            toEventSearchPublicFilter(_ as PublicEventSearchFilter) >> EventSearchFilter.builder().build()
+        }
+        def controller = new PublicEventController(service, eventMapper)
         def server = MockMvcBuilders
                 .standaloneSetup(controller)
                 .setControllerAdvice(MainServiceHandler)

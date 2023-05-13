@@ -18,13 +18,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RequestMapper {
 
-    private final DateTimeConverter converter;
-
     public ParticipationRequest toParticipationRequest(ParticipationRequestDto participationRequestDto) {
         return ParticipationRequest.builder()
                 .event(Event.builder().id(participationRequestDto.getEvent()).build())
                 .requester(User.builder().id(participationRequestDto.getRequester()).build())
-                .createdDate(converter.parseDate(participationRequestDto.getCreated()))
+                .createdDate(DateTimeConverter.parseDate(participationRequestDto.getCreated()))
                 .status(RequestStatus.valueOf(participationRequestDto.getStatus()))
                 .build();
     }
@@ -34,7 +32,7 @@ public class RequestMapper {
                 .id(participationRequest.getId())
                 .event(participationRequest.getEvent().getId())
                 .requester(participationRequest.getRequester().getId())
-                .created(converter.formatDate(participationRequest.getCreatedDate()))
+                .created(DateTimeConverter.formatDate(participationRequest.getCreatedDate()))
                 .status(participationRequest.getStatus().name())
                 .build();
 

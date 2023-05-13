@@ -5,10 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 
+import javax.validation.constraints.NotNull;
+
 @Value
 @Builder
 public class LocationDto {
+    @NotNull
     Float lat;
+    @NotNull
     Float lon;
 
     @JsonCreator

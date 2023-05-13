@@ -13,7 +13,7 @@ import java.util.Collection;
 
 public interface AdminEventApi extends AdminApi {
     @GetMapping("/events")
-    ResponseEntity<Collection<EventFullDto>> getAllEvents(EventSearchFilter eventSearchFilter);
+    ResponseEntity<Collection<EventFullDto>> getAllEvents(@Valid EventSearchFilter eventSearchFilter);
 
     @PatchMapping("/events/{id}")
     ResponseEntity<EventFullDto> updateEvent(@PathVariable("id") Long id,

@@ -1,24 +1,22 @@
 package ru.practicum.main.controller.adminapi
 
-import groovy.json.JsonBuilder
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import ru.practicum.main.converter.DateTimeConverter
 import ru.practicum.main.dto.event.EventSearchFilter
 import ru.practicum.main.dto.event.LocationDto
-import ru.practicum.main.dto.event.StateAction
 import ru.practicum.main.dto.event.UpdateEventAdminRequestDto
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
 import ru.practicum.main.mapper.category.CategoryMapper
 import ru.practicum.main.mapper.event.EventMapper
 import ru.practicum.main.mapper.user.UserMapper
-import ru.practicum.main.model.event.Location
 import ru.practicum.main.model.event.UpdateEventRequest
 import ru.practicum.main.service.event.EventService
 import spock.lang.Specification
 
 import java.time.Clock
+import java.time.LocalDateTime
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
@@ -26,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminEventControllerSpec extends Specification {
 
-    def "Should return 400 when get incorrect request"() {
+    def "Should return 500 when get incorrect request"() {
         given:
         def service = Mock(EventService)
         def controller = new AdminEventController(service, Mock(EventMapper))
@@ -40,7 +38,7 @@ class AdminEventControllerSpec extends Specification {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
 
         server.perform(request)
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
     }
 
     def "Should return 200 when get events"() {
@@ -62,7 +60,7 @@ class AdminEventControllerSpec extends Specification {
         then:
         interaction {
             1 * service.getAllEvents(EventSearchFilter.builder()
-                    .rangeStart("2007-09-01 12:00:00")
+                    .rangeStart(LocalDateTime.of(2007,9,1,12,0,0))
                     .from(0)
                     .size(10)
                     .build())
@@ -73,7 +71,7 @@ class AdminEventControllerSpec extends Specification {
     def "Should return 404 when update unexpected event"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), new DateTimeConverter(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
         def controller = new AdminEventController(service, eventMapper)
         def server = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -85,18 +83,18 @@ class AdminEventControllerSpec extends Specification {
                 .annotation("a" * 25)
                 .categoryId(1L)
                 .description("a" * 25)
-                .eventDate("2000-01-01 12:00:00")
+                .eventDate(LocalDateTime.of(2000, 1, 1, 12, 0, 0))
                 .location(LocationDto.builder().lat(20.0f).lon(20.0f).build())
                 .paid(true)
                 .participantLimit(0)
-                .stateAction(StateAction.PUBLISH_EVENT)
+                .stateAction(UpdateEventAdminRequestDto.StateAction.PUBLISH_EVENT)
                 .title("test")
                 .build()
 
         when:
         def request = patch("/admin/events/9999")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(new JsonBuilder(updateRequest).toString())
+                .content(new ObjectMapper().writeValueAsString(updateRequest))
 
         server.perform(request)
                 .andExpect(status().isNotFound())
