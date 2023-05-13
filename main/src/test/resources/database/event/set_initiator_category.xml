@@ -1,0 +1,16 @@
+<dataset>
+    <PUBLIC.USERS
+            id="1"
+            name="Initiator"
+            email="initiator@mail.mail"
+    />
+    <PUBLIC.USERS
+            id="2"
+            name="AnotherUser"
+            email="anotherUser@mail.mail"
+    />
+    <PUBLIC.CATEGORIES
+            id="1"
+            name="Test event category"
+    />
+</dataset>
