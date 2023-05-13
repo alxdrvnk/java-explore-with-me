@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import ru.practicum.main.dto.event.AdminCommentDto;
 import ru.practicum.main.dto.event.EventFullDto;
 import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.dto.event.UpdateEventAdminRequestDto;
@@ -35,5 +36,11 @@ public class AdminEventController implements AdminEventApi {
         return ResponseEntity.ok(
                 eventMapper.toEventFullDto(eventService.updateEventByAdmin(
                         id, eventMapper.toUpdateEventRequest(updateRequest))));
+    }
+
+    //TODO: implement me!
+    @Override
+    public ResponseEntity<Object> addCommentToEvent(Long id, AdminCommentDto dto) {
+        return null;
     }
 }
