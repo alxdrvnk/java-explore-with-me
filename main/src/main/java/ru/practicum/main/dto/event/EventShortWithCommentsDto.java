@@ -9,7 +9,7 @@ import ru.practicum.main.dto.user.UserShortDto;
 import java.util.List;
 
 @Getter
-public class EventShortWithCommentsDto extends EventShortDto{
+public class EventShortWithCommentsDto extends EventShortDto {
     private final List<CommentDto> comments;
 
     @Builder(builderMethodName = "EventShortWithCommentsDtoBuilder")
