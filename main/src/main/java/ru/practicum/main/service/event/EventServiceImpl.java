@@ -337,7 +337,7 @@ public class EventServiceImpl implements EventService {
             throw new EwmIllegalArgumentException(
                     String.format("Event with id: %d is already published", event.getId()));
 
-        } else if (event.getState() == EventState.CANCELED && updateRequest.getEventState() != null) {
+        } else if (event.getState() == EventState.REJECTED && updateRequest.getEventState() == EventState.PUBLISHED) {
             throw new EwmIllegalArgumentException(
                     String.format("Event with id: %d is already canceled", event.getId()));
         }
