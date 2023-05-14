@@ -1,12 +1,10 @@
 package ru.practicum.main.model.comment;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.main.model.event.Event;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Builder
@@ -33,8 +31,17 @@ public class AdminEventComment {
     Long id;
 
     @ManyToOne
+    @With
     @JoinColumn(name = "event_id")
     Event event;
 
     String text;
+
+    @With
+    @Column(name = "is_corrected")
+    boolean corrected;
+
+    @With
+    @Column(name = "created_date")
+    LocalDateTime createdDate;
 }

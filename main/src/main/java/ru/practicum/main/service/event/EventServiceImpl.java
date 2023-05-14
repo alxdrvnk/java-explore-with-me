@@ -10,10 +10,12 @@ import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
 import ru.practicum.main.mapper.event.EventMapper;
 import ru.practicum.main.model.category.Category;
+import ru.practicum.main.model.comment.AdminEventComment;
 import ru.practicum.main.model.event.*;
 import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.model.request.RequestStatus;
 import ru.practicum.main.model.user.User;
+import ru.practicum.main.repository.AdminCommentsRepository;
 import ru.practicum.main.repository.EventRepository;
 import ru.practicum.main.repository.RequestRepository;
 import ru.practicum.main.repository.specification.EventSpecification;
@@ -38,6 +40,7 @@ public class EventServiceImpl implements EventService {
     private final CategoryService categoryService;
     private final UserService userService;
     private final RequestRepository requestRepository;
+    private final AdminCommentsRepository adminCommentsRepository;
     private final Clock clock;
 
     @Value("${app.name}")
@@ -51,7 +54,9 @@ public class EventServiceImpl implements EventService {
                 eventSearchFilter.getSize());
 
         List<Event> events = eventRepository.findAll(spec, pageRequest).getContent();
+
         events = getConfirmedRequestsCountForEvents(events);
+        events = getEventsWithComments(events);
         return getViewsStat(events, "/events");
     }
 
@@ -60,22 +65,19 @@ public class EventServiceImpl implements EventService {
     public Event updateEventByAdmin(Long id, UpdateEventRequest updateRequest) {
         validateEventDate(updateRequest.getEventDate());
         Event event = getEventById(id);
-        if (event.getState() == EventState.PUBLISHED && updateRequest.getEventState() == EventState.PUBLISHED) {
-            throw new EwmIllegalArgumentException(
-                    String.format("Event with id: %d is already published", event.getId()));
-
-        } else if (event.getState() == EventState.PUBLISHED && updateRequest.getEventState() == EventState.REJECTED) {
-            throw new EwmIllegalArgumentException(
-                    String.format("Event with id: %d is already published", event.getId()));
-
-        } else if (event.getState() == EventState.REJECTED && updateRequest.getEventState() != null) {
-            throw new EwmIllegalArgumentException(
-                    String.format("Event with id: %d is already canceled", event.getId()));
-        }
+        checkEventStateForUpdateEventByAdmin(event, updateRequest);
         Category category = updateRequest.getCategoryId() == null ?
                 event.getCategory()
                 : categoryService.getById(updateRequest.getCategoryId());
-        return eventRepository.save(eventMapper.partialEventUpdate(event, category, updateRequest));
+
+        if (updateRequest.getComment() != null) {
+            adminCommentsRepository.save(
+                    updateRequest.getComment().withEvent(event).withCreatedDate(LocalDateTime.now(clock)));
+        }
+
+        Event dbEvent = eventRepository.save(eventMapper.partialEventUpdate(event, category, updateRequest));
+        return dbEvent.withComments(
+                adminCommentsRepository.findAllByEventAndCorrectedOrderByCreatedDateDesc(event, false));
     }
 
     @Override
@@ -92,7 +94,9 @@ public class EventServiceImpl implements EventService {
     public Event updateEventById(Long userId, Long eventId, UpdateEventRequest updateRequest) {
         validateEventDate(updateRequest.getEventDate());
         userService.getUserById(userId);
+
         Event event = getEventById(eventId);
+
         if (!userId.equals(event.getInitiator().getId())) {
             throw new EwmIllegalArgumentException(
                     String.format("User with id: %d not initiator of Event with id: %d", userId, eventId));
@@ -102,21 +106,39 @@ public class EventServiceImpl implements EventService {
             throw new EwmIllegalArgumentException("Cannot edit Event when is Published");
         }
 
-        return eventRepository.save(eventMapper.partialEventUpdate(event, updateRequest));
+        if (event.getState() == EventState.REJECTED) {
+            event = event.withState(EventState.PENDING);
+        }
+
+        List<AdminEventComment> comments =
+                adminCommentsRepository.findAllByEventAndCorrectedOrderByCreatedDateDesc(event, false);
+        if (!comments.isEmpty()) {
+            adminCommentsRepository.saveAllAndFlush(comments.stream()
+                    .map(c -> c.withCorrected(true))
+                    .collect(Collectors.toList()));
+        }
+        Event dbEvent = eventRepository.save(eventMapper.partialEventUpdate(event, updateRequest));
+        return dbEvent.withComments(
+                adminCommentsRepository.findAllByEventAndCorrectedOrderByCreatedDateDesc(event, false));
     }
 
     @Override
     public Collection<Event> getEventByUser(Long userId, Integer from, Integer size) {
         User user = userService.getUserById(userId);
-        return eventRepository.findByInitiator(user, PageRequest.of(from / size, size));
+        List<Event> events = eventRepository.findByInitiator(user, PageRequest.of(from / size, size));
+        events = getConfirmedRequestsCountForEvents(events);
+        events = getEventsWithComments(events);
+        return events;
     }
 
     @Override
     public Event getEventByIdPrivate(Long userId, Long eventId) {
         User user = userService.getUserById(userId);
-        return eventRepository.findByIdAndInitiator(eventId, user).orElseThrow(() ->
+        Event event = eventRepository.findByIdAndInitiator(eventId, user).orElseThrow(() ->
                 new EwmNotFoundException(
                         String.format("Event with id: %d do not belong to User with id: %d", eventId, userId)));
+        return event.withComments(
+                adminCommentsRepository.findAllByEventAndCorrectedOrderByCreatedDateDesc(event, false));
     }
 
     @Override
@@ -145,10 +167,12 @@ public class EventServiceImpl implements EventService {
         userService.getUserById(userId);
         Event event = getEventById(eventId);
         int confirmsCount = event.getConfirmedRequests();
+
         Collection<ParticipationRequest> eventRequests = requestRepository.findAllById(request.getRequestIds());
         Set<ParticipationRequest> confirmedRequests = new HashSet<>();
         Set<ParticipationRequest> rejectedRequests = new HashSet<>();
         List<ParticipationRequest> updatedRequests = new ArrayList<>();
+
         if (event.getModeration().equals(Boolean.TRUE) || event.getParticipantLimit() != 0) {
             for (ParticipationRequest er : eventRequests) {
                 checkRequestStatus(er);
@@ -186,13 +210,12 @@ public class EventServiceImpl implements EventService {
         if (eventList.isEmpty()) {
             return Collections.emptyList();
         }
-
         return getViewsStat(eventList, uri);
     }
 
     @Override
     public Event getEventById(Long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(
+        return eventRepository.findByIdWithConfirmState(eventId).orElseThrow(
                 () -> new EwmNotFoundException(String.format("Event wih id: %d not found", eventId)));
     }
 
@@ -217,11 +240,44 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getAllEventsByIds(Collection<Long> eventsId) {
         return eventRepository.findAllById(eventsId);
+
     }
 
     @Override
     public List<Event> getAllEventsWithPendingState() {
-        return eventRepository.findAllByState(EventState.PENDING);
+        List<Event> events = eventRepository.findAllByState(EventState.PENDING);
+        events = getEventsWithComments(events);
+        return events;
+    }
+
+    private List<Event> getEventsWithComments(List<Event> events) {
+        if (!events.isEmpty()) {
+            Map<Long, List<AdminEventComment>> groupComments = groupCommentsByEventId(
+                    adminCommentsRepository.findAllByEventIdInAndCorrected(
+                            events.stream().map(Event::getId).collect(Collectors.toList()), false));
+
+            if (!groupComments.isEmpty()) {
+                return events.stream().map(e -> e.withComments(
+                                groupComments.getOrDefault(e.getId(), Collections.emptyList())))
+                        .collect(Collectors.toList());
+            } else {
+                return events.stream().map(e -> e.withComments(Collections.emptyList()))
+                        .collect(Collectors.toList());
+            }
+        }
+        return events;
+    }
+
+    private Map<Long, List<AdminEventComment>> groupCommentsByEventId(List<AdminEventComment> comments) {
+        Map<Long, List<AdminEventComment>> map = new HashMap<>();
+        for (AdminEventComment comment : comments) {
+            if (!map.containsKey(comment.getEvent().getId())) {
+                map.put(comment.getEvent().getId(), List.of(comment));
+            } else {
+                map.get(comment.getEvent().getId()).add(comment);
+            }
+        }
+        return map;
     }
 
     private void validateEventDate(LocalDateTime eventDate) {
@@ -243,9 +299,10 @@ public class EventServiceImpl implements EventService {
     }
 
     private Collection<Event> getViewsStat(List<Event> eventList, String uri) {
-        if (!eventList.isEmpty()) {
-            List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
-            LocalDateTime start = eventList.stream().map(Event::getEventDate).min(Comparator.naturalOrder()).get();
+        List<String> uris = eventList.stream().map(event -> uri + "/" + event.getId()).collect(Collectors.toList());
+        LocalDateTime start = eventList.stream().map(Event::getPublishedDate).min(Comparator.naturalOrder())
+                .orElse(null);
+        if (start != null) {
             List<ViewStatsDto> stats = statsClient.getStats(start, LocalDateTime.now(clock), uris, true);
             if (!stats.isEmpty()) {
                 Map<String, Long> mappedStatsByUri = stats.stream()
@@ -269,5 +326,20 @@ public class EventServiceImpl implements EventService {
         }
 
         return Collections.emptyList();
+    }
+
+    private void checkEventStateForUpdateEventByAdmin(Event event, UpdateEventRequest updateRequest) {
+        if (event.getState() == EventState.PUBLISHED && updateRequest.getEventState() == EventState.PUBLISHED) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Event with id: %d is already published", event.getId()));
+
+        } else if (event.getState() == EventState.PUBLISHED && updateRequest.getEventState() == EventState.REJECTED) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Event with id: %d is already published", event.getId()));
+
+        } else if (event.getState() == EventState.CANCELED && updateRequest.getEventState() != null) {
+            throw new EwmIllegalArgumentException(
+                    String.format("Event with id: %d is already canceled", event.getId()));
+        }
     }
 }

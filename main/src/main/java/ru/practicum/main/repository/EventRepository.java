@@ -34,7 +34,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
                     "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
                     "WHERE e.id = :id " +
                     "GROUP BY e.id")
-    Optional<Event> findById(Long id);
+    Optional<Event> findByIdWithConfirmState(Long id);
 
     @Query(value =
             "SELECT new ru.practicum.main.model.event.Event(" +

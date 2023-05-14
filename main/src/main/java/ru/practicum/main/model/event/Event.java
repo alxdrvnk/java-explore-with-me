@@ -2,10 +2,12 @@ package ru.practicum.main.model.event;
 
 import lombok.*;
 import ru.practicum.main.model.category.Category;
+import ru.practicum.main.model.comment.AdminEventComment;
 import ru.practicum.main.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
                 @NamedAttributeNode(value = "category"),
                 @NamedAttributeNode(value = "initiator")
         })
+@ToString
 public class Event {
 
     @Id
@@ -61,6 +64,9 @@ public class Event {
     @Enumerated(EnumType.STRING)
     EventState state;
     String title;
+    @Transient
+    @With
+    List<AdminEventComment> comments;
     @With
     @Transient
     int views;
@@ -71,7 +77,7 @@ public class Event {
                 new Event(this.id, this.annotation, this.category,
                         this.confirmedRequests, this.createdDate, this.description, this.eventDate,
                         this.initiator, this.location, this.paid, this.participantLimit,
-                        this.publishedDate, this.moderation, this.state, title, this.views);
+                        this.publishedDate, this.moderation, this.state, title, this.comments, this.views);
     }
 
     public Event withDescription(String description) {
@@ -80,7 +86,7 @@ public class Event {
                 new Event(this.id, this.annotation, this.category,
                         this.confirmedRequests, this.createdDate, description, this.eventDate,
                         this.initiator, this.location, this.paid, this.participantLimit,
-                        this.publishedDate, this.moderation, this.state, this.title, this.views);
+                        this.publishedDate, this.moderation, this.state, this.title, this.comments, this.views);
     }
 
     public Event withAnnotation(String annotation) {
@@ -89,7 +95,7 @@ public class Event {
                 new Event(this.id, annotation, this.category,
                         this.confirmedRequests, this.createdDate, this.description, this.eventDate,
                         this.initiator, this.location, this.paid, this.participantLimit,
-                        this.publishedDate, this.moderation, this.state, this.title, this.views);
+                        this.publishedDate, this.moderation, this.state, this.title, this.comments, this.views);
     }
 
 

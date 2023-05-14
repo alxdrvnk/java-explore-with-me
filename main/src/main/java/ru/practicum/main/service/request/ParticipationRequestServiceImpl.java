@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import ru.practicum.main.exception.EwmAlreadyExistsException;
 import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.exception.EwmNotFoundException;
+import ru.practicum.main.service.event.EventService;
+import ru.practicum.main.service.user.UserService;
 import ru.practicum.main.model.event.Event;
 import ru.practicum.main.model.event.EventState;
 import ru.practicum.main.model.request.ParticipationRequest;
 import ru.practicum.main.model.request.RequestStatus;
 import ru.practicum.main.model.user.User;
 import ru.practicum.main.repository.RequestRepository;
-import ru.practicum.main.service.event.EventService;
-import ru.practicum.main.service.user.UserService;
 
 import javax.transaction.Transactional;
 import java.time.Clock;

@@ -6,6 +6,7 @@ import ru.practicum.main.converter.DateTimeConverter;
 import ru.practicum.main.dto.event.*;
 import ru.practicum.main.exception.EwmIllegalArgumentException;
 import ru.practicum.main.mapper.category.CategoryMapper;
+import ru.practicum.main.mapper.comment.CommentMapper;
 import ru.practicum.main.mapper.user.UserMapper;
 import ru.practicum.main.model.category.Category;
 import ru.practicum.main.model.event.*;
@@ -27,6 +28,7 @@ import static ru.practicum.main.dto.event.UpdateEventUserRequestDto.StateAction.
 public class EventMapper {
 
     private final CategoryMapper categoryMapper;
+    private final CommentMapper commentMapper;
     private final UserMapper userMapper;
     private final Clock clock;
 
@@ -53,6 +55,30 @@ public class EventMapper {
 
     }
 
+    public EventFullWithCommentsDto toEventFullWithCommentsDto(Event event) {
+        return EventFullWithCommentsDto.EventFullWithCommentsDtoBuilder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(categoryMapper.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequests())
+                .createdOn(DateTimeConverter.formatDate(event.getCreatedDate()))
+                .description(event.getDescription())
+                .eventDate(DateTimeConverter.formatDate(event.getEventDate()))
+                .initiator(userMapper.toUserShortDto(event.getInitiator()))
+                .location(this.toLocationDto(event.getLocation()))
+                .paid(event.getPaid())
+                .participantLimit(event.getParticipantLimit())
+                .publishedOn(event.getPublishedDate() == null ?
+                        null : event.getPublishedDate().toString())
+                .requestModeration(event.getModeration())
+                .state(event.getState().name())
+                .title(event.getTitle())
+                .views(event.getViews())
+                .comments(
+                        commentMapper.toCommentDtoList(event.getComments()))
+                .build();
+    }
+
     public EventShortDto toEventShortDto(Event event)  {
         return EventShortDto.builder()
                 .id(event.getId())
@@ -67,12 +93,36 @@ public class EventMapper {
                 .build();
     }
 
+    public EventShortWithCommentsDto toEventShortWithCommentsDto(Event event) {
+        return EventShortWithCommentsDto.EventShortWithCommentsDtoBuilder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(categoryMapper.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequests())
+                .eventDate(DateTimeConverter.formatDate(event.getEventDate()))
+                .initiator(userMapper.toUserShortDto(event.getInitiator()))
+                .paid(event.getPaid())
+                .title(event.getTitle())
+                .views(event.getViews())
+                .comments(
+                        commentMapper.toCommentDtoList(event.getComments()))
+                .build();
+    }
+
     public Collection<EventShortDto> toEventShortDtoList(Collection<Event> events) {
         return events.stream().map(this::toEventShortDto).collect(Collectors.toList());
     }
 
     public Collection<EventFullDto> toEventFullDtoList(Collection<Event> events) {
         return events.stream().map(this::toEventFullDto).collect(Collectors.toList());
+    }
+
+    public Collection<EventFullWithCommentsDto> toEventFullWithCommentsDtoList(Collection<Event> events) {
+        return events.stream().map(this::toEventFullWithCommentsDto).collect(Collectors.toList());
+    }
+
+    public Collection<EventShortWithCommentsDto> toEventShortWithCommentsDtoList(Collection<Event> events) {
+        return events.stream().map(this::toEventShortWithCommentsDto).collect(Collectors.toList());
     }
 
     LocationDto toLocationDto(Location location) {
@@ -122,6 +172,25 @@ public class EventMapper {
                 .build();
     }
 
+    public UpdateEventRequest toUpdateEventRequest(UpdateEventAdminRequestDto updateRequest) {
+
+        return UpdateEventRequest.builder()
+                .annotation(updateRequest.getAnnotation())
+                .categoryId(updateRequest.getCategoryId())
+                .description(updateRequest.getDescription())
+                .eventDate(updateRequest.getEventDate())
+                .location(updateRequest.getLocation() == null ?
+                        null : toLocation(updateRequest.getLocation()))
+                .paid(updateRequest.getPaid())
+                .participantLimit(updateRequest.getParticipantLimit())
+                .eventState(updateRequest.getStateAction() == null ?
+                        null : toEventState(updateRequest.getStateAction()))
+                .title(updateRequest.getTitle())
+                .comment(updateRequest.getComment() == null ?
+                        null : commentMapper.toAdminEventComment(updateRequest.getComment()))
+                .build();
+    }
+
     EventState toEventState(StateAction stateAction) {
         if (PUBLISH_EVENT.equals(stateAction)) {
             return EventState.PUBLISHED;
@@ -166,7 +235,7 @@ public class EventMapper {
             updatedEvent = updatedEvent.withModeration(updateRequest.getRequestModeration());
         }
         if (updateRequest.getEventState() != null) {
-            if (event.getState() == EventState.PUBLISHED) {
+            if (updateRequest.getEventState() == EventState.PUBLISHED) {
                 updatedEvent = updatedEvent.withPublishedDate(LocalDateTime.now(clock));
             }
             updatedEvent = updatedEvent.withState(updateRequest.getEventState());

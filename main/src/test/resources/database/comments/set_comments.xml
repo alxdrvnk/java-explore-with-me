@@ -1,0 +1,77 @@
+<dataset>
+    <PUBLIC.USERS
+            id="1"
+            name="Initiator"
+            email="initiator@mail.mail"
+    />
+    <PUBLIC.USERS
+            id="2"
+            name="AnotherUser"
+            email="anotherUser@mail.mail"
+    />
+    <PUBLIC.CATEGORIES
+            id="1"
+            name="Test event category"
+    />
+    <PUBLIC.EVENTS
+            id="1"
+            annotation="Test event annotation"
+            category_id="1"
+            created_date="2000-01-01 12:00:00"
+            description="Test event description"
+            event_date="2000-01-04 12:00:00"
+            initiator_id="1"
+            lat="0"
+            lon="0"
+            paid="False"
+            participant_limit="0"
+            request_moderation="False"
+            state="PENDING"
+            title="Test event title"
+    />
+
+    <PUBLIC.EVENTS
+            id="2"
+            annotation="Test event annotation"
+            category_id="1"
+            created_date="2000-01-01 12:00:00"
+            description="Test event description"
+            event_date="2000-01-04 12:00:00"
+            initiator_id="1"
+            lat="0"
+            lon="0"
+            paid="False"
+            participant_limit="0"
+            request_moderation="False"
+            state="PENDING"
+            title="Test event title"
+    />
+    <PUBLIC.ADMIN_EVENT_COMMENTS
+            id="1"
+            event_id="1"
+            is_corrected="false"
+            text="Test comment #1 for event with id 1"
+            created_date="2000-01-01 12:00:00"
+    />
+    <PUBLIC.ADMIN_EVENT_COMMENTS
+            id="2"
+            event_id="1"
+            is_corrected="false"
+            text="Test comment #2 for event with id 1"
+            created_date="2000-02-01 12:00:00"
+    />
+    <PUBLIC.ADMIN_EVENT_COMMENTS
+            id="3"
+            event_id="2"
+            is_corrected="false"
+            text="Test comment #1 for event with id 2"
+            created_date="2000-02-01 12:00:00"
+    />
+    <PUBLIC.ADMIN_EVENT_COMMENTS
+            id="4"
+            event_id="2"
+            is_corrected="false"
+            text="Test comment #2 for event with id 2"
+            created_date="2000-01-01 12:00:00"
+    />
+</dataset>

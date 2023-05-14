@@ -11,6 +11,7 @@ import ru.practicum.main.dto.event.UpdateEventUserRequestDto
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
 import ru.practicum.main.mapper.category.CategoryMapper
+import ru.practicum.main.mapper.comment.CommentMapper
 import ru.practicum.main.mapper.event.EventMapper
 import ru.practicum.main.mapper.request.RequestMapper
 import ru.practicum.main.mapper.user.UserMapper
@@ -69,7 +70,7 @@ class PrivateEventControllerSpec extends Specification {
     def "Should return 201 when create new event"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new CommentMapper(), new UserMapper(), Clock.systemUTC())
         def controller = new PrivateEventController(service, eventMapper, Mock(RequestMapper))
         def server = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -114,7 +115,7 @@ class PrivateEventControllerSpec extends Specification {
     def "Should return 200 when update events"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new CommentMapper(), new UserMapper(), Clock.systemUTC())
         def controller = new PrivateEventController(service, eventMapper, Mock(RequestMapper))
         def server = MockMvcBuilders
                 .standaloneSetup(controller)
@@ -152,6 +153,7 @@ class PrivateEventControllerSpec extends Specification {
                         .publishedDate(LocalDateTime.now())
                         .initiator(User.builder().build())
                         .state(EventState.PUBLISHED)
+                        .comments(Collections.emptyList())
                         .build()
             }
         }
@@ -160,7 +162,7 @@ class PrivateEventControllerSpec extends Specification {
     def "Should return 200 when update request status"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new CommentMapper(), new UserMapper(), Clock.systemUTC())
         def requestMapper = new RequestMapper()
         def controller = new PrivateEventController(service, eventMapper, requestMapper)
         def server = MockMvcBuilders

@@ -1,12 +1,15 @@
 package ru.practicum.main.model.event;
 
 import lombok.Builder;
+import lombok.ToString;
 import lombok.Value;
+import ru.practicum.main.model.comment.AdminEventComment;
 
 import java.time.LocalDateTime;
 
 @Value
 @Builder
+@ToString
 public class UpdateEventRequest {
     String annotation;
     Long categoryId;
@@ -18,4 +21,5 @@ public class UpdateEventRequest {
     Boolean requestModeration;
     EventState eventState;
     String title;
+    AdminEventComment comment;
 }

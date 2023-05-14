@@ -3,29 +3,29 @@ package ru.practicum.main.dto.event;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 import ru.practicum.main.dto.category.CategoryDto;
 import ru.practicum.main.dto.user.UserShortDto;
 
-@Value
+@Getter
 @Builder
 public class EventFullDto {
-    Long id;
-    String annotation;
-    CategoryDto category;
-    int confirmedRequests;
-    String createdOn;
-    String description;
-    String eventDate;
-    UserShortDto initiator;
-    LocationDto location;
-    Boolean paid;
-    int participantLimit;
-    String publishedOn;
-    Boolean requestModeration;
-    String state;
-    String title;
-    int views;
+    private Long id;
+    private String annotation;
+    private CategoryDto category;
+    private int confirmedRequests;
+    private String createdOn;
+    private String description;
+    private String eventDate;
+    private UserShortDto initiator;
+    private LocationDto location;
+    private Boolean paid;
+    private int participantLimit;
+    private String publishedOn;
+    private Boolean requestModeration;
+    private String state;
+    private String title;
+    private int views;
 
     @JsonCreator
     public EventFullDto(@JsonProperty(value = "id") Long id,
