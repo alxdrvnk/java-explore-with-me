@@ -9,6 +9,7 @@ import ru.practicum.main.dto.compilation.UpdateCompilationRequestDto
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
 import ru.practicum.main.mapper.category.CategoryMapper
+import ru.practicum.main.mapper.comment.CommentMapper
 import ru.practicum.main.mapper.compilation.CompilationMapper
 import ru.practicum.main.mapper.event.EventMapper
 import ru.practicum.main.mapper.user.UserMapper
@@ -18,7 +19,6 @@ import ru.practicum.main.model.event.Event
 import ru.practicum.main.service.compilation.CompilationService
 import spock.lang.Specification
 
-import java.sql.Struct
 import java.time.Clock
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AdminCompilationControllerSpec extends Specification {
 
     private final compilationMapper = new CompilationMapper(
-            new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC()))
+            new EventMapper(new CategoryMapper(), new CommentMapper(), new UserMapper(), Clock.systemUTC()))
 
     def "Should return 201 when create compilation"() {
         given:

@@ -35,22 +35,22 @@ public class PrivateEventController implements PrivateEventApi {
     }
 
     @Override
-    public ResponseEntity<Collection<EventShortDto>> getEventsByUser(Long userId, Integer from, Integer size) {
+    public ResponseEntity<Collection<EventShortWithCommentsDto>> getEventsByUser(Long userId, Integer from, Integer size) {
         Collection<Event> events = eventService.getEventByUser(userId, from, size);
-        return ResponseEntity.ok(eventMapper.toEventShortDtoList(events));
+        return ResponseEntity.ok(eventMapper.toEventShortWithCommentsDtoList(events));
     }
 
     @Override
-    public ResponseEntity<EventFullDto> getEventById(Long userId, Long eventId) {
+    public ResponseEntity<EventFullWithCommentsDto> getEventById(Long userId, Long eventId) {
         Event event = eventService.getEventByIdPrivate(userId, eventId);
-        return ResponseEntity.ok(eventMapper.toEventFullDto(event));
+        return ResponseEntity.ok(eventMapper.toEventFullWithCommentsDto(event));
     }
 
     @Override
-    public ResponseEntity<EventFullDto> updateEventById(Long userId, Long eventId, UpdateEventUserRequestDto requestDto) {
+    public ResponseEntity<EventFullWithCommentsDto> updateEventById(Long userId, Long eventId, UpdateEventUserRequestDto requestDto) {
         log.info("User with id: {} update Event with id: {} with data: {}", userId, eventId, requestDto);
         Event event = eventService.updateEventById(userId, eventId, eventMapper.toUpdateEventRequest(requestDto));
-        return ResponseEntity.ok(eventMapper.toEventFullDto(event));
+        return ResponseEntity.ok(eventMapper.toEventFullWithCommentsDto(event));
     }
 
     @Override

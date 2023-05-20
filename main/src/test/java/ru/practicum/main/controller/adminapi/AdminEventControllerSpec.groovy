@@ -9,6 +9,7 @@ import ru.practicum.main.dto.event.UpdateEventAdminRequestDto
 import ru.practicum.main.exception.EwmNotFoundException
 import ru.practicum.main.handler.MainServiceHandler
 import ru.practicum.main.mapper.category.CategoryMapper
+import ru.practicum.main.mapper.comment.CommentMapper
 import ru.practicum.main.mapper.event.EventMapper
 import ru.practicum.main.mapper.user.UserMapper
 import ru.practicum.main.model.event.UpdateEventRequest
@@ -71,7 +72,7 @@ class AdminEventControllerSpec extends Specification {
     def "Should return 404 when update unexpected event"() {
         given:
         def service = Mock(EventService)
-        def eventMapper = new EventMapper(new CategoryMapper(), new UserMapper(), Clock.systemUTC())
+        def eventMapper = new EventMapper(new CategoryMapper(), new CommentMapper(), new UserMapper(), Clock.systemUTC())
         def controller = new AdminEventController(service, eventMapper)
         def server = MockMvcBuilders
                 .standaloneSetup(controller)

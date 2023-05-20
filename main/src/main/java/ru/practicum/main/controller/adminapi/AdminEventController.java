@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import ru.practicum.main.dto.event.EventFullDto;
+import ru.practicum.main.dto.event.EventFullWithCommentsDto;
 import ru.practicum.main.dto.event.EventSearchFilter;
 import ru.practicum.main.dto.event.UpdateEventAdminRequestDto;
 import ru.practicum.main.mapper.event.EventMapper;
@@ -22,18 +22,24 @@ public class AdminEventController implements AdminEventApi {
     private final EventMapper eventMapper;
 
     @Override
-    public ResponseEntity<Collection<EventFullDto>> getAllEvents(EventSearchFilter eventSearchFilter) {
+    public ResponseEntity<Collection<EventFullWithCommentsDto>> getAllEvents(EventSearchFilter eventSearchFilter) {
         log.info("Get events with filter: {}", eventSearchFilter);
         Collection<Event> events = eventService.getAllEvents(eventSearchFilter);
         return ResponseEntity.ok(
-                eventMapper.toEventFullDtoList(events));
+                eventMapper.toEventFullWithCommentsDtoList(events));
     }
 
     @Override
-    public ResponseEntity<EventFullDto> updateEvent(Long id, UpdateEventAdminRequestDto updateRequest) {
-        log.info("Admin update Event with id: {} with data: {}",id, updateRequest);
+    public ResponseEntity<EventFullWithCommentsDto> updateEvent(Long id, UpdateEventAdminRequestDto updateRequest) {
+        log.info("Admin update Event with id: {} with data: {}", id, updateRequest.toString());
         return ResponseEntity.ok(
-                eventMapper.toEventFullDto(eventService.updateEventByAdmin(
+                eventMapper.toEventFullWithCommentsDto(eventService.updateEventByAdmin(
                         id, eventMapper.toUpdateEventRequest(updateRequest))));
+    }
+
+    @Override
+    public ResponseEntity<Collection<EventFullWithCommentsDto>> getPendingEvents(Integer from, Integer size) {
+        return ResponseEntity.ok(
+                eventMapper.toEventFullWithCommentsDtoList(eventService.getAllEventsWithPendingState()));
     }
 }

@@ -34,7 +34,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
                     "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
                     "WHERE e.id = :id " +
                     "GROUP BY e.id")
-    Optional<Event> findById(Long id);
+    Optional<Event> findByIdWithConfirmState(Long id);
 
     @Query(value =
             "SELECT new ru.practicum.main.model.event.Event(" +
@@ -53,10 +53,10 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
                     "e.moderation," +
                     "e.state," +
                     "e.title) FROM Event As e " +
-            "LEFT JOIN ParticipationRequest As pr " +
-            "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
-            "WHERE e.initiator = :user " +
-            "GROUP BY e.id")
+                    "LEFT JOIN ParticipationRequest As pr " +
+                    "ON pr.event.id = e.id AND pr.status = 'CONFIRMED' " +
+                    "WHERE e.initiator = :user " +
+                    "GROUP BY e.id")
     List<Event> findByInitiator(User user, PageRequest pageRequest);
 
     @Query(value =
@@ -114,4 +114,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
                     "GROUP BY e.id"
     )
     List<EventsRequestCount> getConfirmedRequestCountForEvents(List<Long> eventIds);
+
+    List<Event> findAllByState(EventState state);
 }

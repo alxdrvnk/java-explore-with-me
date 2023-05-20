@@ -85,11 +85,24 @@ class EventRepositorySpec extends Specification {
         dbEvent.getCategory().getId() == 1
         dbEvent.getCategory().getName() == "Test event category"
         dbEvent.getConfirmedRequests() == 0
-        dbEvent.getCreatedDate() == LocalDateTime.of(2000,1,1,12,0,0)
+        dbEvent.getCreatedDate() == LocalDateTime.of(2000, 1, 1, 12, 0, 0)
         dbEvent.getDescription() == "Test event description"
-        dbEvent.getEventDate() == LocalDateTime.of(2000,1,4,12,0,0)
+        dbEvent.getEventDate() == LocalDateTime.of(2000, 1, 4, 12, 0, 0)
         dbEvent.getInitiator().getId() == 1
         dbEvent.getInitiator().getName() == "Initiator"
         dbEvent.getState() == EventState.PENDING
+    }
+
+    @DatabaseSetup(value = "classpath:database/event/set_pending_event.xml",
+            connection = "dbUnitDatabaseConnection")
+    def "Should return event with pending state"() {
+        when:
+        def dbEvents = repository.findAllByState(EventState.PENDING)
+
+        then:
+        with(dbEvents) {
+            id == [2]
+            state == [EventState.PENDING]
+        }
     }
 }
